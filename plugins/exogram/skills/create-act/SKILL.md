@@ -46,7 +46,7 @@ Ask with `AskUserQuestion`; the fields are the template's keys, never a list fro
 - Every question suggests values: the candidates from step 3, and for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`.
 - A field whose schema allows a literal takes free text; no note is created for it.
 - A field the user already answered is never asked again and its answer never reworded.
-- One question settles one field. A conflict between an answer and a rule or another field is asked as that field's question, never deferred to the preview.
+- One question settles one decision. A conflict between an answer and a rule or another field is asked as that field's question, never deferred to the preview.
 - An answer the schema cannot hold stops the run: name the property and `/exogram:create-property`, change no schema.
 
 Acts relate only as the formalism relates transitions, through shared facts (`requires`, `precedes`) and potentials (`hasPotential`), never through `isPartOf`.
