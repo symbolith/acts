@@ -2,7 +2,7 @@
 name: sync-session
 description: Sync only the work of the current session, commit the files this session changed and what they need to stand on feature branches and open pull requests, and leave every other local change untouched. Use when the user asks to "sync this session", "sync session", "commit this session", "land what we did", "commit what you just changed", "push only this session's changes", or wants the session's edits landed without the rest of the workspace.
 argument-hint: [repository folder ...]
-allowed-tools: Bash, Read, Grep, Glob, AskUserQuestion, Skill
+allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 # Sync Session

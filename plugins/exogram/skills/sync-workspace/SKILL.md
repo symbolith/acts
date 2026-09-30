@@ -2,7 +2,7 @@
 name: sync-workspace
 description: Sync every repository of the exogram workspace, pull remote changes, then commit local ones on feature branches and open pull requests for the user to merge, behind approval gates. Use when the user asks to "sync workspace", "sync the exogram", "pull everything", "commit everything", "land my changes", "push all repos", or wants the root and every nested repository up to date and committed.
 argument-hint: [--files-from <file>] [repository folder ...]
-allowed-tools: Bash, Read, Grep, Glob, AskUserQuestion, Skill
+allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 # Sync Workspace
@@ -40,20 +40,15 @@ Every file not listed stays uncommitted in the working tree, through the branch 
 
 ## Decisions
 
-The user has not seen the diff. Every decision has two parts: the evidence as a chat message, then the question.
+The user has not seen the diff. Every decision is one markdown chat message that ends the turn; the user answers free-form.
+Never `AskUserQuestion`: chat text before a tool call is swallowed, and its `preview` wraps at 64 columns.
 
-The evidence is markdown, printed before the question:
+The message holds, in this order:
 
 - what changed: file paths and aliases, counts, the before and after or a short diff excerpt
 - why it is a question: the risk or conflict found, one line per risk
 - the recommendation and its reason
-
-The question is `AskUserQuestion`:
-
-- one line, no evidence in it
-- options of at most five words, the consequence in the option's description
-- an option that resolves a risk names it
-- never a `preview`: it wraps at 64 columns
+- the question in one line, then numbered options of at most five words, each with its consequence; an option that resolves a risk names it
 
 Never name a change only by id, step, or label. A deletion shows the note's alias, its comment, and every note that links to it.
 
@@ -70,7 +65,7 @@ Per repository, `git fetch --prune origin`, then:
 
 - on `main` and behind `origin/main`: `git pull --ff-only --autostash`
 - local `main` diverged from `origin/main`: skip, never merge or reset
-- on a feature branch whose pull request is merged (`gh pr view <branch> --json state`, or `glab mr view <branch>`): `git switch main`, `git pull --ff-only --autostash`, `git branch -D <branch>`. `-D` because a rebase merge gives the commits new ids.
+- on a feature branch whose pull request is merged (`gh pr view <branch> --json state`, or `glab mr view <branch>`): `git fetch origin main:main`, `git switch main`, `git branch -D <branch>`. The fetch comes first: a stale `main` makes the switch refuse a file with local changes. `-D` because a rebase merge gives the commits new ids.
 - on a feature branch with an open pull request: fetch only, stay on it
 - the autostash does not apply cleanly: stop, report the files, leave the stash for the user
 
@@ -173,5 +168,5 @@ One table: repository, commits pulled, commits pushed, pull request link and sta
 - Running a state-changing command before its gate was approved
 - `gh api` or `glab api` without an explicit `--method`
 - A question without the evidence to decide it
-- Evidence inside the question, an option, or a `preview`
+- A decision asked through `AskUserQuestion`
 - With `--files-from`, committing a file that is not listed
