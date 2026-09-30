@@ -39,18 +39,17 @@ Cap at the top five candidates per property, confirm by alias and `comment` only
 
 ### 4. Ask, Every Run
 
-One `AskUserQuestion` with:
+Ask with `AskUserQuestion`; the fields are the template's keys, never a list from this file, and `aliases`, `type` and `reviewLevel` are set without asking.
 
-- `state`, options are the notes typed `Type State` in `facts/exogram/`, each by the local name of its `iri`; there is no default.
-- inputs: every fact the act reads, candidates from step 3; empty is a valid answer.
-- outputs: every fact the act writes, candidates from step 3, each marked as created or as changed; empty is a valid answer.
-- `requires`: the acts that must be done before this one, candidates from step 3; empty is a valid answer.
-- `precedes`: the acts this one must be done before; empty is a valid answer.
-- `hasPotential`: the acts this one may fuse; empty is a valid answer.
+- Ask each `required` field; it has no default and no empty answer.
+- Offer all `optional` fields as one selectable list, then ask only the selected ones; the rest are dropped.
+- Every question suggests values: the candidates from step 3, and for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`.
+- A field whose schema allows a literal takes free text; no note is created for it.
+- A field the user already answered is never asked again and its answer never reworded.
+- One question settles one field. A conflict between an answer and a rule or another field is asked as that field's question, never deferred to the preview.
+- An answer the schema cannot hold stops the run: name the property and `/exogram:create-property`, change no schema.
 
 Acts relate only as the formalism relates transitions, through shared facts (`requires`, `precedes`) and potentials (`hasPotential`), never through `isPartOf`.
-
-Never skip any of these questions, even when no candidate was found; then offer the free answer.
 
 Each input or output takes one of three forms, settled in the same question: an existing note, linked in `hasInputFact` when read, in `used` when changed; the data itself, a literal in `hasInputFact` / `hasOutputFact`; a fact that does not exist yet, a new Place linked in `hasInput` / `hasOutput`, or `hasInputs` / `hasOutputs` when the place closes or opens a map.
 
@@ -65,28 +64,18 @@ Grep the frontmatter for these, list what was derived in the preview, and write 
 
 ### 5. Draft
 
-Frontmatter, from the template:
+The note is the template, filled; nothing the template lacks is added, and the body stays as the template has it.
 
-- `aliases[0]`: the template's alias line decides the shape. Act: an imperative sentence naming the state change, e.g. `Add CI for the TLC checks`. Project: `Project <Name>`. Job Application: no prefix, a noun phrase naming position and employer.
+- `aliases[0]`: a title the user gave, verbatim; else the template's alias line decides the shape, and the title of an Act is an imperative sentence naming the state change, e.g. `Add CI for the TLC checks`.
 - `type`: the template chain, verbatim.
-- `state`: the answer from step 4.
-- `hasInputFact`, `hasOutputFact`, `used`, `hasInput`, `hasOutput`, `requires`, `precedes`, `hasPotential`: the answers from step 4; `contributor`: the links from step 3; all in the form `"[<alias>](<id>.md)"`, a literal fact as a plain string; a note in another exogram is linked as `../<exogram>/<id>.md`.
-- `comment`: one sentence, only when the title does not carry the whole point.
-- `lang`: omitted for English.
+- Every other key: the answer from step 4, a link as `"[<alias>](<id>.md)"`, a literal as a plain string.
 - `reviewLevel: unread`.
-- Every other template key still `optional` is dropped.
-
-Body, one sentence per line:
-
-- First the situation the act changes, with the sites it concerns as `file:` references.
-- Then the instruction, what done looks like.
-- Every noun that names an exogram entity is a markdown link.
-- Project and Job Application: a `## Tasks` list of `- [ ]` items, existing acts as links.
-- Act: no headings unless the note argues alternatives; then `## Problem`, `## Solutions`, `## Open questions`.
+- A key answered empty is dropped.
 
 ### 6. Preview
 
-Show the complete note, every new Place note, and their target paths, then ask for approval with `AskUserQuestion`. Include the related notes found, one line of justification each, so a false match can be vetoed.
+Print the complete note, every new Place note, their target paths, and the related notes found with one line of justification each, as chat text, then end the turn.
+No `AskUserQuestion` here: text before a tool call is swallowed. The user approves or corrects free-form.
 
 ### 7. Write
 
@@ -120,11 +109,9 @@ The paths of the notes written and the fact, place, `used`, `requires` and `prec
 
 ## Anti-patterns
 
-- Hardcoding the subtype list or the type chain instead of reading `facts/exogram/`
-- A noun-phrase Act title, or a Project title without the `Project` prefix
+- Hardcoding the subtype list, the type chain or the field set instead of reading `facts/`
 - Linking a fact that does not exist yet instead of creating its place
 - Putting a note the act edits into `hasOutput` or `hasOutputFact`; an edited note is `used`
-- Defaulting `state`
-- A body without links although the description names exogram entities
+- Asking every optional field one by one
+- Writing a body, a heading or a key the template does not have
 - Opening note bodies in an exogram whose `AGENTS.md` forbids it
-- Leaving `optional` markers in the written frontmatter
