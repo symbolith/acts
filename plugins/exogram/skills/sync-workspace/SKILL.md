@@ -1,32 +1,59 @@
 ---
 name: sync-workspace
-description: Sync every repository of the exogram workspace, pull remote changes, then commit and land local ones, one pull request per repository, rebased on main, behind approval gates. Use when the user asks to "sync workspace", "sync the exogram", "pull everything", "commit everything", "land my changes", "push all repos", or wants the root and every nested repository up to date, committed, and merged.
-argument-hint: [repository folder ...]
+description: Sync every repository of the exogram workspace, pull remote changes, then commit local ones on feature branches and open pull requests for the user to merge, behind approval gates. Use when the user asks to "sync workspace", "sync the exogram", "pull everything", "commit everything", "land my changes", "push all repos", or wants the root and every nested repository up to date and committed.
+argument-hint: [--files-from <file>] [repository folder ...]
 allowed-tools: Bash, Read, Grep, Glob, AskUserQuestion, Skill
 ---
 
 # Sync Workspace
 
-Sync the workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a branch from `origin/main`, rebased on `origin/main`, merged by pull request with rebase. `main` never takes a direct commit. The exogram root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
+Sync the workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a feature branch, one pull request per branch, rebase merge onto `main`. `main` never takes a direct commit. The skill opens pull requests and never merges them: the user merges elsewhere. Between runs a repository stays on its feature branch, and new changes join its open pull request. No branch is ever force-pushed. The exogram root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
+Every gate covers all repositories at once.
+Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: podman, commit signing, and SSH fail inside it.
+Scratch files use absolute paths, since `$TMPDIR` differs inside and outside the sandbox.
 
 ## Inputs
 
 - `$ARGUMENTS`: optional repository folders to limit the run. Default is every repository.
+- `--files-from <file>`: optional absolute path of a file that lists one path per line, relative to the exogram root. It limits the run to those files, see File Scope.
 
 ## Repositories
 
 The root (`.`) and every `namedExogram` of the Workspace note, the root note typed `Type Workspace`: the label is the folder, the link target the remote. Read them from the note, never from this file.
 
+## File Scope
+
+With `--files-from` the run covers only the listed files. `exogram:sync-session` calls the skill this way. The steps change:
+
+| Step | Change |
+| --- | --- |
+| Repositories | only those that hold a listed file |
+| Pull | `just validate` takes the listed files that still exist, not the whole workspace |
+| Survey | `changes` counts the listed files, and a second count gives the other changed files |
+| Package | only listed files are read, grouped, and committed. The gate names every other changed file as left out |
+| Commit | a file the user limited to some hunks is staged with `git apply --cached` of a patch holding only those hunks, never with `add -A` |
+| Remote Settings | skipped |
+
+Every file not listed stays uncommitted in the working tree, through the branch switch and the rebase.
+
 ## Decisions
 
-The user has not seen the diff. Every question carries, in the question itself:
+The user has not seen the diff. Every decision has two parts: the evidence as a chat message, then the question.
+
+The evidence is markdown, printed before the question:
 
 - what changed: file paths and aliases, counts, the before and after or a short diff excerpt
-- why it is a question: the risk or conflict found, with the evidence
-- every option with its consequence
+- why it is a question: the risk or conflict found, one line per risk
 - the recommendation and its reason
+
+The question is `AskUserQuestion`:
+
+- one line, no evidence in it
+- options of at most five words, the consequence in the option's description
+- an option that resolves a risk names it
+- never a `preview`: it wraps at 64 columns
 
 Never name a change only by id, step, or label. A deletion shows the note's alias, its comment, and every note that links to it.
 
@@ -43,7 +70,8 @@ Per repository, `git fetch --prune origin`, then:
 
 - on `main` and behind `origin/main`: `git pull --ff-only --autostash`
 - local `main` diverged from `origin/main`: skip, never merge or reset
-- on another branch: fetch only; a branch whose pull request merged elsewhere, its upstream gone, is reported for the user to delete
+- on a feature branch whose pull request is merged (`gh pr view <branch> --json state`, or `glab mr view <branch>`): `git switch main`, `git pull --ff-only --autostash`, `git branch -D <branch>`. `-D` because a rebase merge gives the commits new ids.
+- on a feature branch with an open pull request: fetch only, stay on it
 - the autostash does not apply cleanly: stop, report the files, leave the stash for the user
 
 After the pull, `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
@@ -63,66 +91,87 @@ One table, one row per repository with local changes, unmerged commits, or pulle
 
 Skip, and say why, a repository that:
 
-- is on a branch other than `main`, unless the branch is `origin/main` plus unmerged commits from an earlier run of this skill
+- is on a branch without a pull request, a branch this skill did not open
 - has local `main` ahead of `origin/main` on a non-empty remote
 
 ### 4. Package
 
-Read the full diff of each repository (`git diff HEAD`, and every untracked file). Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file only with the user's word, by hunk.
+An empty remote gets one `Initial commit` of every file, unread except for a scan for secrets and junk.
+Otherwise read the full diff (`git diff HEAD`, and every untracked file), one parallel subagent per large repository.
+Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file only with the user's word, by hunk.
 
-Gate: show the grouping per repository, files per commit. The user approves, moves files, or drops a repository.
+Gate: the user approves, moves files, edits messages, or drops a repository. The approval covers the branch, the commits, the push, and the pull request: steps 5 to 8 run without another gate. The evidence is one block per commit:
+
+```markdown
+### <repository> → <branch>
+
+<commit message>
+
+| File | Change |
+| --- | --- |
+| <path> | <alias, or what changed, and `hunk only` for a split file> |
+
+Pull request: <title and body that `--fill` gives, or `joins #<number>`>
+Left out: <count> files (<kinds>)
+```
+
+`Pull request` and `Left out` appear once per repository, `Left out` only with `--files-from`. Risks follow the last block.
 
 ### 5. Branch
 
 Per repository with an approved grouping:
 
 - Empty remote: stay on `main`. The first push to an empty remote is the one direct push to `main`; the pre-push hook lets it through.
-- Otherwise: `git switch -c <type>/<slug> origin/main`, where type and slug name the main intent of the repository's commits. Uncommitted changes carry over.
+- On `main`: `git switch -c <type>/<slug> origin/main`, where type and slug name the main intent of the repository's commits. Uncommitted changes carry over.
+- On a feature branch with an open pull request: stay; the new commits join that pull request. Never branch from it: GitHub's rebase merge gives the merged commits new ids, so a branch built on them would need a force push.
 
 ### 6. Commit
 
-Per commit of the grouping:
+Clear the index first (`reset -q`, never `--hard`); earlier staged changes would leak into the first commit.
+Per approved commit, no further gate:
 
-1. `git add -- <files>`; nothing else is ever staged.
-2. Scan `git diff --staged` for secrets. On a hit stop and warn.
-3. Draft the message with the `dev:commit-message` skill.
-4. Gate: show `git diff --staged --name-status` and the message. The user approves, edits the message, or regroups.
-5. `git commit -F -` with the message on stdin.
+1. Assert the index is empty, then `add -A -- <files>`.
+2. Scan `diff --staged` for secrets. On a hit stop and warn.
+3. `commit -F -` with the approved message on stdin.
 
 ### 7. Rebase
 
-`git fetch origin`, then `git rebase --autostash origin/main`. On a conflict stop, report the files, and leave the rebase for the user.
+Only a branch never pushed: `git fetch origin`, then `git rebase --autostash origin/main`. A pushed branch is never rebased; GitHub rebases at merge. On a conflict stop, report the files, and leave the rebase for the user.
 
 ### 8. Land
 
-Gate: show `git log --oneline origin/main..HEAD`, the pull request title and body. Then:
+No gate: the package gate approved the push and the pull request. Per repository:
 
 | Remote | Commands |
 | --- | --- |
 | empty | `git push -u origin main` |
-| GitHub | `git push -u origin HEAD`, `gh pr create --base main --fill`, `gh pr merge --rebase --delete-branch` |
-| GitLab | `glab mr create --fill --target-branch main --remove-source-branch --yes`, `glab mr merge --rebase --yes` |
+| GitHub | `git push -u origin HEAD`; `gh pr create --base main --fill` when the branch has no pull request |
+| GitLab | `git push -u origin HEAD`; `glab mr create --fill --target-branch main --remove-source-branch --yes` when the branch has no merge request |
 
-Afterwards `git switch main`, `git pull --ff-only`, `git branch -d <branch>` when it still exists.
+Stop there. The user merges elsewhere; the repository stays on the branch. GitHub rebases at merge; GitLab needs the Rebase button or `glab mr rebase` when `main` moved.
 
 ### 9. Remote Settings
 
 Once per repository, read the settings and offer every fix behind one gate:
 
 - GitHub, `gh api --method GET repos/<owner>/<name>`: `allow_rebase_merge` true, `allow_merge_commit` and `allow_squash_merge` false, `delete_branch_on_merge` true. Fix with `gh api --method PATCH repos/<owner>/<name> -F <field>=<value>`.
-- GitHub, public repository only: a ruleset on the default branch with the rules `deletion`, `non_fast_forward`, `required_linear_history`, and `pull_request` with `allowed_merge_methods: ["rebase"]` and zero approvals. Read with `gh api --method GET repos/<owner>/<name>/rulesets`, create with `gh api --method POST repos/<owner>/<name>/rulesets --input -`. Private repositories on GitHub Free have no rulesets; the pre-push hook stands in.
+- GitHub, public repository only: a ruleset on the default branch with the rules `deletion`, `non_fast_forward`, `required_linear_history`, and `pull_request` with `allowed_merge_methods: ["rebase"]` and one approval, the Admin role (`actor_id` 5) on the bypass list, since an author cannot approve their own pull request. Read with `gh api --method GET repos/<owner>/<name>/rulesets`, create with `gh api --method POST repos/<owner>/<name>/rulesets --input -`. Private repositories on GitHub Free have no rulesets; the pre-push hook stands in.
 - GitLab, `glab api --method GET projects/<url-encoded path>`: `merge_method` is `ff`; `main` is protected with push access `No one` (level 0). Changing it needs the Maintainer role; report when the user lacks it.
 
 ### 10. Report
 
-One table: repository, commits pulled, commits landed, pull request link, skipped with reason.
+One table: repository, commits pulled, commits pushed, pull request link and state, skipped with reason.
 
 ## Anti-patterns
 
 - Committing on `main` of a remote that already has one
-- `--no-verify`, `--force`, `push --force-with-lease`, `reset --hard`, `rebase -i`, `stash drop`, `clean`
+- Merging a pull request, or switching to `main` while its pull request is open
+- `--no-verify`, `--force`, `--force-with-lease`, `reset --hard`, `rebase -i`, `stash drop`, `clean`
+- A branch created from another feature branch
 - Switching, rebasing, or deleting a branch the user was working on
 - A commit mixing intents, or a message not drafted by `dev:commit-message`
 - Running a state-changing command before its gate was approved
 - `gh api` or `glab api` without an explicit `--method`
 - A question without the evidence to decide it
+- Evidence inside the question, an option, or a `preview`
+- With `--files-from`, committing a file that is not listed
