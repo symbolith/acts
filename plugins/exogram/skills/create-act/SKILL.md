@@ -44,7 +44,7 @@ Ask with `AskUserQuestion`; the fields are the template's keys, never a list fro
 - Ask each `required` field; it has no default and no empty answer.
 - Offer all `optional` fields as one selectable list, then ask only the selected ones; the rest are dropped.
 - Every question suggests values: the candidates from step 3, and for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`.
-- A field whose schema allows a literal takes free text; no note is created for it.
+- A literal answer is written as a literal; no note is ever created to hold an answer.
 - A field the user already answered is never asked again and its answer never reworded.
 - One question settles one decision. A conflict between an answer and a rule or another field is asked as that field's question, never deferred to the preview.
 - An answer the schema cannot hold stops the run: name the property and `/exogram:create-property`, change no schema.

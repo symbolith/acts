@@ -127,7 +127,7 @@ For JavaScript-based queries:
 
 ```
 <!-- dataview-serializer-js:
-dv.table(["Name", "Rating"], dv.pages("#books").map(b => [b.file.link, b.rating]))
+dv.table(["Name", "Rating"], dv.pages("#books").sort(b => b.file.aliases[0]).map(b => [b.file.link, b.rating]))
  -->
 <!-- dataview-serializer-js-result -->
 | Name | Rating |
@@ -155,6 +155,7 @@ Walk this list for every new or edited block. Any miss means the block is wrong,
 3. Every optional column wrapped in `default`.
 4. No prose column.
 5. After the user regenerates, read the result block: no `<ul>`, no `[object Object]`, no `null`, no row over 120 characters.
+6. Every block sorted: DQL with `SORT`, JS with `.sort(...)`, by `file.aliases[0]` unless a rating or date is the point.
 
 ## Editing an Existing Block
 
