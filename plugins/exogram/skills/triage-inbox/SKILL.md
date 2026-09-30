@@ -92,9 +92,9 @@ For EACH item return a JSON object:
 {
   "item_number": <N>,
   "classification": "<note type from exogram.yaml | Task | Trash | Skip>",
-  "target": "<for Tasks: path to existing project note, 'new project', or one of these task lists: {task_list_names}>",
+  "target": "<for Tasks: alias and path relative to the exogram root of an existing project note, 'new project', or one of these task lists: {task_list_names}>",
   "alias": "<suggested title for new notes>",
-  "related_notes": ["<paths to related exogram notes found>"],
+  "related_notes": [{"alias": "<alias of a related note found>", "path": "<its path relative to the exogram root>"}],
   "reasoning": "<one sentence explaining classification>"
 }
 
@@ -105,6 +105,8 @@ You MUST pick the best classification for every item. Do not leave any unclassif
 
 Present each item one at a time using `AskUserQuestion`. Work through all items sequentially.
 
+Every note shown to the user, here and in the Step 6 report, is `Alias file:./<path>:1:1`, alone on its line, the path relative to the working directory.
+
 For each item, show:
 
 ```
@@ -112,12 +114,12 @@ For each item, show:
 
 > original text exactly as it appears in inbox
 
-**Proposed:** Classification → Target/Alias
+**Proposed:** Classification → new alias, or for an existing note:
+Alias file:./<path>:1:1
 **Exogram:** target exogram for a new note, or `undecided`
 **Why:** one-sentence reasoning
-**Related:** [linked note paths]
-
-OK? (y/n/override)
+**Related:**
+Alias file:./<path>:1:1
 ```
 
 Wait for the user's response before showing the next item:
@@ -155,7 +157,7 @@ After all items are processed:
 4. Verify the inbox file is still valid markdown
 
 Report summary:
-- Notes created (with file paths and aliases)
-- Tasks added (with target notes)
+- Notes created
+- Tasks added, with their target notes
 - Items trashed
 - Items skipped (still in inbox)
