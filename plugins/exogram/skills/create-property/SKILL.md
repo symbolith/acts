@@ -1,13 +1,14 @@
 ---
 name: create-property
-description: Add a new frontmatter property to the exogram schema. Use when the user wants to "add a property", "add a field", "new frontmatter field", "add metadata", or extend the exogram schema with a new property.
+description: Add a new frontmatter property to the exogram schema, or attach an existing one to a type. Use when the user wants to "add a property", "add a field", "new frontmatter field", "add metadata", "attach a property to a type", "make a property required or optional on a type", asks "is this property allowed on this type", or extends the exogram schema with a property.
 argument-hint: [property-name-or-description]
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templates:*), Bash(just validate:*), WebSearch, WebFetch, AskUserQuestion
 ---
 
 # Add Exogram Property
 
-Add a new property to the exogram schema, assign it to relevant note types, and update templates.
+Add a property to the exogram schema, or attach an existing one to a type.
+For an existing property start at step 3.
 
 ## Inputs
 
