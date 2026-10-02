@@ -9,6 +9,7 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templ
 
 Add a property to the exogram schema, or attach an existing one to a type.
 For an existing property start at step 3.
+The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`.
 
 ## Inputs
 
@@ -44,15 +45,15 @@ The value shape lives on the property note (step 2b); `properties.yaml` is gener
 | any other class, or absent | a link |
 
 - A fixed set of values is a value-set class: a type note plus one note per value carrying the value's `iri`, made with `/exogram:create-type`; the property's `range` names that type note.
-- No `description` anywhere: the one-line definition lives only in the note's `comment`.
+- No `description` in a note: the one-line definition lives only in the note's `comment`. `just templates` copies it into `properties.yaml` as the property's `description`.
 
 ### 2b. Write the Property Note
 
-Every property has a note in `facts/exogram/`, typed `Type Property`. File: `facts/exogram/<ULID>.md`, the id from `just ulid` run in the exogram root. Fill `file:~/repositories/symbolith-exogram/facts/.templates/Property.md`, alias `Property <name>`, drop every key still set to `optional`, add `reviewLevel: unread`. `comment` is the single home of the definition, `properties.yaml` carries no `description`. When `iri` is a term of an existing vocabulary, `comment` is that vocabulary's own definition of the term, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` term gets a definition written here: one sentence, no example, never naming the term (the `iri` carries it). The sentence states only what no key states: no inverse, derivation, usage rule, or what the term is not; those live in `inverseOf`, `hasPrimitive`, and `characteristic`. Body: copy the template body verbatim, the `Superproperties`, `Subproperties`, `Inverse of`, and `Usage` query blocks. Write only the query comments, never a result block; the plugin generates results once the note is saved in Obsidian.
+Every property has a note in `facts/exogram/`, typed `Type Property`. File: `facts/exogram/<ULID>.md`, the id from `just ulid` run in the exogram workspace root. Fill `file:~/repositories/symbolith-exogram/facts/.templates/Property.md`, alias `Property <name>`, drop every key still set to `optional`, add `reviewLevel: unread`. When `iri` is a term of an existing vocabulary, `comment` is that vocabulary's own definition of the term, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` term gets a definition written here: one sentence, no example, never naming the term (the `iri` carries it). The sentence states only what no key states: no inverse, derivation, usage rule, or what the term is not; those live in `inverseOf`, `hasPrimitive`, and `characteristic`. Body: copy the template body verbatim, the `Superproperties`, `Subproperties`, `Inverse of`, and `Usage` query blocks. Write only the query comments, never a result block; the plugin generates results once the note is saved in Obsidian.
 
 - `iri` is the first key: the IRI the property denotes, as a markdown link labelled with the compact IRI, e.g. `iri: "[dcterms:subject](http://purl.org/dc/terms/subject)"`. Never a bare prefixed term. The `@context` of `properties.yaml` is generated from the compact IRIs on the type and property notes; a new prefix needs nothing beyond its first use.
   - Ontology term: `iri` is that term.
-  - Factors Vocabulary term: `[fctrs:<name>](https://symbolith.org/factors#<name>)`. The Vocabulary IS the note `Ontology Factors` (`20260919181803.md`), derived from the notes that carry `isDefinedBy` Ontology Factors; the Formalization (`factors/20260518150627.md`) says what a term means.
+  - Factors Vocabulary term: `[fctrs:<name>](https://symbolith.org/factors#<name>)`. The Vocabulary IS the note `Ontology Factors` (`20260919181803.md`), derived from the notes that carry `isDefinedBy` Ontology Factors; the Formalization (`20260518150627.md`, in `factors/exogram/`) says what a term means.
   - Coined here: `[exogram:<name>](https://symbolith.org/exogram#<name>)`.
 - `sameAs` holds further equivalent terms only. Never repeat the `iri` there.
 - `subPropertyOf`, `inverseOf`: one link to a property note, or a full-URI link for a term without a note. `inverseOf` goes on both sides.
@@ -77,11 +78,11 @@ Ask only what the lookup left open: required or optional, and the types when the
 
 `just templates` adds the property to the root `properties` of `exogram.yaml` and its shape to `properties.yaml`; never edit either. Every property is valid on every note through that root declaration.
 
-Attach it on the type note: a link to the property note under `requiredProperty` or `optionalProperty`. `just templates` writes `then.required` and `then.properties` of `types/<Title>.yaml` from those lists; never edit a type file. Attach it once, at the type decided in step 3; subtypes inherit it through their `type` chain and never repeat it in `optionalProperty`. A subtype may still list it in `requiredProperty`: that is a constraint, not an attachment. Every type it is attached to must be the property's `domain` or a subtype of it, or the property has no `domain`; `just validate` fails otherwise.
+Attach it on the type note: an entry under `requiredProperty` or `optionalProperty` with `property` linking the property note, and optionally `type` (the type the value must be an instance of), `value` (the note the value must contain) and `comment`. `just templates` writes `then.required` and `then.properties` of `types/<Title>.yaml` from those entries; never edit a type file. A type note is self-contained: attach the property on every type whose notes carry it, subtypes included, nothing is inherited. Every type it is attached to must be the property's `domain` or a subtype of it through `subClassOf`, or the property has no `domain`; `just validate` fails otherwise.
 
 ### 6. Regenerate Templates
 
-Run `just templates` in the exogram root. It writes `properties.yaml`, `exogram.yaml`, the type files and the templates from the notes; none is edited by hand. Then `just validate` without a glob, until clean.
+Run `just templates` in the exogram workspace root. It writes `properties.yaml`, `exogram.yaml`, the type files and the templates from the notes; none is edited by hand. Then `just validate` without a glob, until clean.
 
 ### 7. Summary
 
