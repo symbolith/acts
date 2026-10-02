@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash(just:*), AskUserQuestion
 
 # Create Act
 
-Create one note typed `Type Act` or a subtype of it. The exogram root is `/home/beavis/repositories/symbolith-exogram`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
+Create one note typed `Type Act` or a subtype of it. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
 
 ## Inputs
 
@@ -18,47 +18,47 @@ Create one note typed `Type Act` or a subtype of it. The exogram root is `/home/
 ### 1. Resolve the Type
 
 - Act is `facts/exogram/20260608023505.md`. Its subtypes are the type notes in `facts/exogram/` whose `subClassOf` names that id; grep for it, never trust the type note's `Subtypes` result block, it may be stale.
-- Take the subtype the user named or implied ("project" means `Type Project`). Default is Act itself.
+- Take the subtype the user named or implied ("project" means `Type Project`), and never question it. Default is Act itself.
 - Read `facts/.templates/<Title>.md` for the type chain and the field set. The `type` list is copied verbatim.
 
 ### 2. Resolve the Exogram
 
 The note lives in the exogram of its subject: the folder from `in:`, else the folder of the notes the act reads and writes, else the current working directory when it is an exogram. Otherwise ask.
 
-Read that exogram's `AGENTS.md` and obey it. Where it forbids reading notes without permission (factors does), link only by grepping `aliases` lines, never open a note body.
+Its notes folder is the exogram workspace root for the Symbolith exogram, the member folder for a notes-only member (`gordian-exogram`, `infai-exogram`), and `<member>/exogram/` for a software member.
+
+Read the `AGENTS.md` in the root of that exogram's repository, when it has one, and obey it. Where it forbids reading notes without permission (factors does), link only by grepping `aliases` lines, never open a note body.
 
 ### 3. Find Related Notes
 
-Grep the exogram, and `facts/exogram/` for types and people, for:
+For every key of the template, the candidates are:
 
-- the facts the act reads and writes, by alias; a note that exists and is only read is linked by `hasInputFact`, a note that exists and is changed by `used`, one that does not exist yet gets a Place, linked by `hasInput` / `hasOutput`
-- other acts in the folder that write what this one reads, or read what this one writes, by fact or place: the candidates for `requires` and `precedes`; acts this one may fuse: the candidates for `hasPotential`
-- people and software the description names
+- the values that notes of the same type in the exogram already hold for that key
+- the notes the act reads and writes, by alias: the candidates for the template's input and output keys
+- other acts in the folder that write what this one reads, or read what this one writes: the candidates for `requires` and `precedes`
+- people and software the description names, grepped in the exogram and in `facts/exogram/`
 
-Cap at the top five candidates per property, confirm by alias and `comment` only.
+Cap at the top five candidates per key, confirm by alias and `comment` only.
 
 ### 4. Ask, Every Run
 
 Ask with `AskUserQuestion`; the fields are the template's keys, never a list from this file, and `aliases`, `type` and `reviewLevel` are set without asking.
 
 - Ask each `required` field; it has no default and no empty answer.
-- Offer all `optional` fields as one selectable list, then ask only the selected ones; the rest are dropped.
+- Ask the template's input and output keys: which notes the act reads, which it writes.
+- Offer every remaining `optional` field as a selectable list, over several questions when one cannot hold them all, then ask only the selected ones; the rest are dropped.
 - Every question suggests values: the candidates from step 3, and for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`.
 - A literal answer is written as a literal; no note is ever created to hold an answer.
 - A field the user already answered is never asked again and its answer never reworded.
-- One question settles one decision. A conflict between an answer and a rule or another field is asked as that field's question, never deferred to the preview.
+- One question settles one decision. A conflict between an answer and another field is asked as that field's question, never deferred to the preview.
 - An answer the schema cannot hold stops the run: name the property and `/exogram:create-property`, change no schema.
 
-Acts relate only as the formalism relates transitions, through shared facts (`requires`, `precedes`) and potentials (`hasPotential`), never through `isPartOf`.
-
-Each input or output takes one of three forms, settled in the same question: an existing note, linked in `hasInputFact` when read, in `used` when changed; the data itself, a literal in `hasInputFact` / `hasOutputFact`; a fact that does not exist yet, a new Place linked in `hasInput` / `hasOutput`, or `hasInputs` / `hasOutputs` when the place closes or opens a map.
-
-`hasOutput` and `hasOutputFact` are `generated` in PROV-O: the entity did not exist before the act. A note the act edits existed before, so it is `used`, never an output.
+Acts relate only as the formalism relates transitions, through what they read and write (`requires`, `precedes`) and potentials (`hasPotential`), never through `isPartOf`.
 
 When `requires` or `precedes` comes back empty but the inputs or outputs did not, derive the edges:
 
-- `requires`: every act in the exogram whose outputs name a place or fact among this act's inputs.
-- `precedes`: every act in the exogram whose inputs name a place or fact among this act's outputs.
+- `requires`: every act in the exogram whose outputs name a note among this act's inputs.
+- `precedes`: every act in the exogram whose inputs name a note among this act's outputs.
 
 Grep the frontmatter for these, list what was derived in the preview, and write the edges into this note only; the other acts stay untouched.
 
@@ -74,7 +74,7 @@ The note is the template, filled; nothing the template lacks is added, and the b
 
 ### 6. Preview
 
-Print the complete note, every new Place note, their target paths, and the related notes found with one line of justification each, as chat text, then end the turn.
+Print the complete note, its target path, and the related notes found with one line of justification each, as chat text, then end the turn.
 No `AskUserQuestion` here: text before a tool call is swallowed. The user approves or corrects free-form.
 
 ### 7. Write
@@ -85,23 +85,21 @@ Only after approval:
 just --justfile /home/beavis/repositories/symbolith-exogram/justfile ulid
 ```
 
-One ULID per file. Write `<exogram>/<ULID>.md` for the act and one for each new Place, from `facts/.templates/Place.md`, alias the fact it will hold, `reviewLevel: unread`, `optional` keys dropped. Check no file exists first. Then:
+Write `<notes folder>/<ULID>.md`, the notes folder from step 2. Check no file exists first. Then:
 
 ```bash
-just --justfile /home/beavis/repositories/symbolith-exogram/justfile validate '<exogram>/<ULID>.md'
+just --justfile /home/beavis/repositories/symbolith-exogram/justfile validate '<notes folder>/<ULID>.md'
 ```
-
-for every file written.
 
 Fix what it reports and rerun until clean.
 
 ### 8. Report
 
-The paths of the notes written and the fact, place, `used`, `requires` and `precedes` links set. Nothing else.
+The path of the note written and the links set. Nothing else.
 
 ## Hard Rules
 
-- Never write a canon note (`reviewLevel: canon`) and never edit any existing note; this skill creates the act note and its new places, nothing else.
+- Never write a canon note (`reviewLevel: canon`) and never edit any existing note; this skill creates the act note, nothing else.
 - Never edit content between dataview-serializer markers.
 - Filename is a ULID from `just ulid`, never invented, never descriptive.
 - Never set `reviewLevel` above `unread`.
@@ -110,8 +108,8 @@ The paths of the notes written and the fact, place, `used`, `requires` and `prec
 ## Anti-patterns
 
 - Hardcoding the subtype list, the type chain or the field set instead of reading `facts/`
-- Linking a fact that does not exist yet instead of creating its place
-- Putting a note the act edits into `hasOutput` or `hasOutputFact`; an edited note is `used`
+- Naming a property the template does not have
+- Leaving a template key out of the questions
 - Asking every optional field one by one
 - Writing a body, a heading or a key the template does not have
 - Opening note bodies in an exogram whose `AGENTS.md` forbids it
