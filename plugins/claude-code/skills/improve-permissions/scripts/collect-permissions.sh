@@ -3,9 +3,9 @@ set -euo pipefail
 
 GLOBAL_SETTINGS="$HOME/.config/claude/settings.json"
 
-MONOREPO_SETTINGS="$HOME/repositories/symbolith-exogram/exogram/settings.json"
+EXOGRAM_WORKSPACE_SETTINGS="$HOME/repositories/symbolith-exogram/exogram/settings.json"
 
-global_allow=$(jq -r '.permissions.allow // [] | .[]' "$GLOBAL_SETTINGS" "$MONOREPO_SETTINGS" 2>/dev/null)
+global_allow=$(jq -r '.permissions.allow // [] | .[]' "$GLOBAL_SETTINGS" "$EXOGRAM_WORKSPACE_SETTINGS" 2>/dev/null)
 global_deny=$(jq -r '.permissions.deny // [] | .[]' "$GLOBAL_SETTINGS" 2>/dev/null)
 
 global_all=$(printf '%s\n%s' "$global_allow" "$global_deny" | sort -u)

@@ -6,18 +6,18 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion
 
 # Clean Inbox
 
-Process the GTD inbox, the note typed `Type Inbox`, by triaging unprocessed items into proper exogram notes, tasks, or trash.
+Process the GTD inbox, the note typed `Type Inbox`, by triaging unprocessed items into proper exogram notes, tasks, or trash. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every relative path below is relative to it.
 
 ## Step 0: Find the Inbox
 
-Grep the exogram for `[Type Inbox](20260923141332.md)` in frontmatter, excluding `facts/.templates/` and the type note itself. Exactly one hit is the inbox. Several hits: ask which one with `AskUserQuestion`. None: stop and say so. Never assume a path.
+Grep the exogram workspace root for `[Type Inbox](20260923141332.md)` in frontmatter, excluding `facts/.templates/` and the type note itself. Exactly one hit is the inbox. Several hits: ask which one with `AskUserQuestion`. None: stop and say so. Never assume a path.
 
 ## Step 1: Load Context
 
 Read these files first:
 
 1. The inbox note found in Step 0
-2. `~/repositories/symbolith-exogram/AGENTS.md` (note creation workflow, schemas, conventions)
+2. `AGENTS.md` and the Premise notes it imports with `@` (note creation workflow, schemas, conventions)
 
 **Important:** Only content from the `## Inbox` heading onwards is inbox material. Everything above it (frontmatter and the organized task lists) is NOT inbox. Read the task list names from the note at run time.
 
@@ -63,15 +63,15 @@ For each section, launch an Agent subagent to research and propose classificatio
 Each subagent receives:
 - All item contents (exact text from inbox) for its section(s)
 - The section name(s)
-- Instruction to read `~/repositories/symbolith-exogram/facts/exogram.yaml` and `~/repositories/symbolith-exogram/facts/properties.yaml` for note types
-- Instruction to search the exogram (`~/repositories/symbolith-exogram/`) for related notes and existing projects
-- Instruction to read every note typed `Type Exogram` (the exograms' `README.md` files, listed in `~/repositories/symbolith-exogram/README.md`); its `subject` names the subject matter the exogram holds
+- Instruction to read `facts/exogram.yaml` and `facts/properties.yaml` for note types
+- Instruction to search the exogram workspace root for related notes and existing projects
+- Instruction to read every note typed `Type Exogram` (one ULID note per exogram, listed under `## Exograms` in the note Workspace Symbolith, `01M3PA7WS8GQQSWT00T1EMKTV1.md`); its `subject` names the subject matter the exogram holds
 
 Each subagent must return per item:
-- **Proposed classification**: one of the note types in the `type` enum of `~/repositories/symbolith-exogram/facts/exogram.yaml`, read live, never from a remembered list, OR "Task", OR "Trash", OR "Skip"
+- **Proposed classification**: one of the note types in the `type` enum of `facts/exogram.yaml`, read live, never from a remembered list, OR "Task", OR "Trash", OR "Skip"
 - **If Task**: proposed target (existing project note path, or "new project", or the name of one of the task lists above `## Inbox`)
-- **If new note**: suggested alias/title and any related notes found in the exogram
-- **If new note**: the target exogram, decided per item: the item's organization, person or project must match an exogram's `subject`. There is NO default exogram. If no `subject` settles it, return "undecided" and say why
+- **If new note**: suggested alias/title and any related notes found in the exogram workspace
+- **If new note**: the target exogram, decided per item: the item's organization, person or project must match an exogram's `subject`. NEVER fall back to the default exogram. If no `subject` settles it, return "undecided" and say why
 - **Reasoning**: one sentence explaining the classification
 
 The subagent must make a decision for every item. Never flag items as "ambiguous" without also providing a best-guess classification.
@@ -85,16 +85,17 @@ Triage these inbox items from a personal Zettelkasten exogram.
 **Items:**
 {item_list_with_numbers}
 
-Read `~/repositories/symbolith-exogram/facts/exogram.yaml` and `~/repositories/symbolith-exogram/facts/properties.yaml` for note types.
-Search `~/repositories/symbolith-exogram/` for existing notes related to these items (use Grep and Glob).
+The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
+Read `facts/exogram.yaml` and `facts/properties.yaml` for note types.
+Search the exogram workspace root for existing notes related to these items (use Grep and Glob).
 
 For EACH item return a JSON object:
 {
   "item_number": <N>,
   "classification": "<note type from exogram.yaml | Task | Trash | Skip>",
-  "target": "<for Tasks: alias and path relative to the exogram root of an existing project note, 'new project', or one of these task lists: {task_list_names}>",
+  "target": "<for Tasks: alias and path relative to the exogram workspace root of an existing project note, 'new project', or one of these task lists: {task_list_names}>",
   "alias": "<suggested title for new notes>",
-  "related_notes": [{"alias": "<alias of a related note found>", "path": "<its path relative to the exogram root>"}],
+  "related_notes": [{"alias": "<alias of a related note found>", "path": "<its path relative to the exogram workspace root>"}],
   "reasoning": "<one sentence explaining classification>"
 }
 
@@ -133,16 +134,16 @@ Collect all confirmed actions before executing.
 
 ## Step 5: Execute
 
-Process all confirmed items in batch. Follow `~/repositories/symbolith-exogram/AGENTS.md` note creation workflow for new notes:
-1. Read schemas (`~/repositories/symbolith-exogram/facts/exogram.yaml`, `~/repositories/symbolith-exogram/facts/properties.yaml`)
-2. Search the exogram for existing related notes to link
+Process all confirmed items in batch. Follow the note creation workflow of the Premise notes read in Step 1 for new notes:
+1. Read schemas (`facts/exogram.yaml`, `facts/properties.yaml`)
+2. Search the exogram workspace for existing related notes to link
 3. Create note with proper frontmatter (ULID filename from `just ulid`, aliases, the `type` chain copied from the type's template, required properties)
 
 For each classification:
 
-- **Note type** → Create new note per AGENTS.md workflow, in the confirmed target exogram. Read that exogram's own `AGENTS.md` first, if it has one
+- **Note type** → Create new note per that workflow, in the confirmed target exogram. Read the `AGENTS.md` in the root of that exogram's repository first, if it has one
 - **Task + existing project** → Append `- [ ]` line to the project note
-- **Task + new project** → Create Project note first (per AGENTS.md), then append task
+- **Task + new project** → Create Project note first (per that workflow), then append task
 - **Task + task list** → Append to the matching task list above `## Inbox`
 - **Trash** → Just remove from inbox (no note created)
 - **Skip** → Leave in place

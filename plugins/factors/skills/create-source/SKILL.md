@@ -42,5 +42,5 @@ Conventions the template does not spell out:
    ```
    A DOI or title term can appear in non-`Source` notes (the ground-of-truth notes, skill files); read only candidate frontmatter (`aliases`, `type`, `doi`) and keep matches whose `type` is `Source`.
 4. If a match exists, return its `[alias](id.md)` link and stop.
-5. Otherwise mint an id with `just ulid` from the exogram root and write the `Source` note using only verified fields.
+5. Otherwise mint an id with `just ulid` from the exogram workspace root, `~/repositories/symbolith-exogram`, and write the `Source` note using only verified fields.
 6. Report: the link to use, whether it was reused or created, and the source URL each field was verified against.

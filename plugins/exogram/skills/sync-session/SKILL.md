@@ -1,13 +1,13 @@
 ---
 name: sync-session
-description: Sync only the work of the current session, commit the files this session changed and what they need to stand on feature branches and open pull requests, and leave every other local change untouched. Use when the user asks to "sync this session", "sync session", "commit this session", "land what we did", "commit what you just changed", "push only this session's changes", or wants the session's edits landed without the rest of the workspace.
+description: Sync only the work of the current session, commit the files this session changed and what they need to stand on feature branches and open pull requests, and leave every other local change untouched. Use when the user asks to "sync this session", "sync session", "commit this session", "land what we did", "commit what you just changed", "push only this session's changes", or wants the session's edits landed without the rest of the exogram workspace.
 argument-hint: [repository folder ...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 # Sync Session
 
-Land the work of this session as self-contained commits. This skill builds the list of files the session changed and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram root is `/home/beavis/repositories/symbolith-exogram`.
+Land the work of this session as self-contained commits. This skill builds the list of files the session changed and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`.
 
 ## Inputs
 
@@ -36,7 +36,7 @@ Per listed file, with read-only git:
 
 | Finding | Action |
 | --- | --- |
-| outside the exogram root | drop, report as not synced |
+| outside the exogram workspace root | drop, report as not synced |
 | ignored by git | drop, report |
 | no change in `git status --porcelain -- <file>` | drop: already committed or reverted |
 | `git diff HEAD -- <file>` holds a hunk the session did not write | keep: the file is committed whole |
@@ -52,7 +52,7 @@ An empty list: stop and say the session left nothing uncommitted.
 Otherwise:
 
 1. Print the list grouped by repository, a note with its alias, and every added or dropped file with its reason.
-2. Write the list to a scratch file by absolute path, one path per line, relative to the exogram root.
+2. Write the list to a scratch file by absolute path, one path per line, relative to the exogram workspace root.
 3. Invoke `exogram:sync-workspace` with `--files-from <scratch file> $ARGUMENTS`.
 
 The package gate of `exogram:sync-workspace` is where the user corrects the list.

@@ -1,6 +1,6 @@
 ---
 name: improve-permissions
-description: Consolidate every settings.local.json into the monorepo or global settings and delete it. This skill should be used when the user asks to "improve permissions", "consolidate permissions", "merge local permissions", "review permission settings", or "clean up claude permissions".
+description: Consolidate every settings.local.json into the exogram workspace settings or the global settings and delete it. This skill should be used when the user asks to "improve permissions", "consolidate permissions", "merge local permissions", "review permission settings", or "clean up claude permissions".
 ---
 
 # Improve Permissions
@@ -53,8 +53,9 @@ Group related permissions (e.g. all cargo commands together) into multi-select q
 
 ### 7. Update the targets
 
-- The target follows the source, never the command: the monorepo ships only what it holds, global settings belong to dotfiles.
-- A permission from a `settings.local.json` inside `~/repositories/symbolith-exogram` goes to `~/repositories/symbolith-exogram/exogram/settings.json`; then run `just init`, which writes it into every `.claude/settings.json` there.
+- The exogram workspace root is `~/repositories/symbolith-exogram`. The exogram workspace settings are `~/repositories/symbolith-exogram/exogram/settings.json`.
+- The target follows the source, never the command. Global settings belong to dotfiles.
+- A permission from a `settings.local.json` inside the exogram workspace root goes to the exogram workspace settings; then run `just init`, which writes it into every `.claude/settings.json` there.
 - A permission from outside goes to `~/.config/claude/settings.json`; one from both sides goes to both.
 - Add to `.permissions.allow`, keep it sorted, preserve all other fields.
 

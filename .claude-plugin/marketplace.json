@@ -2,7 +2,7 @@
   "name": "acts",
   "owner": { "name": "Gordian Dziwis" },
   "plugins": [
-    { "name": "claude-code", "source": "./plugins/claude-code", "description": "Skills for authoring agents, skills, MCP servers and permissions" },
+    { "name": "claude-code", "source": "./plugins/claude-code", "description": "Skills for creating and improving skills, setting up MCP servers and consolidating permissions" },
     { "name": "dev", "source": "./plugins/dev", "description": "Rust, justfile, repository documentation and commit message skills" },
     { "name": "diagrams", "source": "./plugins/diagrams", "description": "Draw.io and Mermaid diagram skills" },
     { "name": "exogram", "source": "./plugins/exogram", "description": "Skills for creating and checking exogram notes, types, and properties" },
