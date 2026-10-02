@@ -1,13 +1,13 @@
 ---
 name: sync-workspace
-description: Sync every repository of the exogram workspace, pull remote changes, then commit local ones on feature branches and open pull requests for the user to merge, behind approval gates. Use when the user asks to "sync workspace", "sync the exogram", "pull everything", "commit everything", "land my changes", "push all repos", or wants the root and every nested repository up to date and committed.
+description: Sync every repository of the exogram workspace, pull remote changes, then commit local ones on feature branches and open pull requests for the user to merge, behind approval gates. Use when the user asks to "sync workspace", "sync the exogram", "pull everything", "commit everything", "land my changes", "push all repos", or wants the root repository and every member up to date and committed.
 argument-hint: [--files-from <file>] [repository folder ...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 # Sync Workspace
 
-Sync the workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a feature branch, one pull request per branch, rebase merge onto `main`. `main` never takes a direct commit. The skill opens pull requests and never merges them: the user merges elsewhere. Between runs a repository stays on its feature branch, and new changes join its open pull request. No branch is ever force-pushed. The exogram root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
+Sync the exogram workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a feature branch, one pull request per branch, rebase merge onto `main`. `main` never takes a direct commit. The skill opens pull requests and never merges them: the user merges elsewhere. Between runs a repository stays on its feature branch, and new changes join its open pull request. No branch is ever force-pushed. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
 Every gate covers all repositories at once.
@@ -17,11 +17,11 @@ Scratch files use absolute paths, since `$TMPDIR` differs inside and outside the
 ## Inputs
 
 - `$ARGUMENTS`: optional repository folders to limit the run. Default is every repository.
-- `--files-from <file>`: optional absolute path of a file that lists one path per line, relative to the exogram root. It limits the run to those files, see File Scope.
+- `--files-from <file>`: optional absolute path of a file that lists one path per line, relative to the exogram workspace root. It limits the run to those files, see File Scope.
 
 ## Repositories
 
-The root (`.`) and every `namedExogram` of the Workspace note, the root note typed `Type Workspace`: the label is the folder, the link target the remote. Read them from the note, never from this file.
+The root repository (`.`) and every member. The members are the `namedExogram` entries of the Workspace note, the note typed `Type Workspace` in the exogram workspace root: the label is the folder, the link target the remote. Read them from the note, never from this file.
 
 ## File Scope
 
@@ -30,7 +30,7 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 | Step | Change |
 | --- | --- |
 | Repositories | only those that hold a listed file |
-| Pull | `just validate` takes the listed files that still exist, not the whole workspace |
+| Pull | `just validate` takes the listed files that still exist, not the whole exogram workspace |
 | Survey | `changes` counts the listed files, and a second count gives the other changed files |
 | Package | only listed files are read, grouped, and committed. The gate names every other changed file as left out |
 | Commit | a file the user limited to some hunks is staged with `git apply --cached` of a patch holding only those hunks, never with `add -A` |
@@ -56,7 +56,7 @@ Never name a change only by id, step, or label. A deletion shows the note's alia
 
 ### 1. Preflight
 
-- `just init` clones every missing repository and installs the pre-push hook.
+- `just init` clones every missing member and installs the pre-push hook.
 - Skip, and say why, a repository mid-rebase or mid-merge.
 
 ### 2. Pull
