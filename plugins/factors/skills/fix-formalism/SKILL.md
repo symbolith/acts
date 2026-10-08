@@ -24,8 +24,8 @@ the fix; a Remark is the rare exception, only when the text is already exact.
 - No, the text was exact but the consequence is genuinely surprising -> a
   **Remark** (STYLE `>` element). First extend an existing nearby Remark; add a
   new one only if none fits. Never restate what the fixed text already implies.
-- It belongs in another canon note (AGENTS.md names them: the vocabulary, the
-  state and step summaries) or to the daemon (the AGENTS.md daemon rule) -> do not touch the
+- It belongs in another canon note (Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names them: the vocabulary, the
+  state and step summaries) or to the daemon (the Premise Writing the formalism daemon rule) -> do not touch the
   formalism; say where it goes and stop.
 
 Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuestion`.
@@ -37,10 +37,10 @@ Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuest
    NO USE BEFORE DEFINE.
 3. Show the `file:./20260518150627.md:LINE:COL` site and the verbatim change;
    note it edits a ground-of-truth note; get approval. `--dry-run` stops here.
-4. Apply with Edit only (the AGENTS.md Edit rule: never Write/`sed`/`echo`,
+4. Apply with Edit only (the Premise Writing the formalism Edit rule: never Write/`sed`/`echo`,
    never the dataview-serializer blocks).
 5. Validate the change: an `Explore` subagent checks it against STYLE (the
-   AGENTS.md style rule); confirm the other canon notes still agree, flag any
+   Premise Writing the formalism style rule); confirm the other canon notes still agree, flag any
    divergence.
 
 Report: lesson, classification, site, edit, verdict (`captured` / `dry-run` /

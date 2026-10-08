@@ -10,7 +10,7 @@ allowed-tools: Read, Bash, Grep, Glob, Agent, AskUserQuestion
 Layered checker for the formalism note `file:./20260518150627.md:1:1`.
 
 The note is the source of truth: it carries its own sets, axioms, step rules,
-and theorems; its STYLE grammar is the style guide note AGENTS.md names. Read
+and theorems; its STYLE grammar is the style guide note Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names. Read
 them from the notes at runtime.
 This skill describes how to check, never a copy of what the note says, and it
 ships no standalone linter, so nothing here drifts when the note changes.
@@ -30,7 +30,7 @@ ground-of-truth note and wait for confirmation.
 
 Per the repo CLAUDE.md, read only the canon notes (`reviewLevel: canon`; find
 them with `grep -l '^reviewLevel: canon' *.md ../../facts/exogram/*.md` run in
-`factors/exogram/`, their roles are in AGENTS.md) and non-note files (schemas,
+`factors/exogram/`, their roles are in Premise Writing the formalism) and non-note files (schemas,
 TLA+ specs, justfile).
 The vocabulary among them is the `fctrs:` type and property notes in
 `../../facts/exogram/` (`grep -l 'symbolith.org/factors#' ../../facts/exogram/*.md`). Open no other note
@@ -93,7 +93,7 @@ violation).
 
 ## Tier 2 — STYLE-grammar pass
 
-Spawn an `Explore` subagent. Have it read the style guide note AGENTS.md names
+Spawn an `Explore` subagent. Have it read the style guide note Premise Writing the formalism names
 (the grammar lives there, do not restate it) and check every body block of the
 formalism against it, including NO USE BEFORE DEFINE on the formula column. Return
 `file:` findings or "clean".

@@ -19,8 +19,8 @@ Tighten the prose of the note given in `$ARGUMENTS` without changing what it say
 
 Read style rules live, in this order, and never restate them:
 
-1. The style guide note the repo `AGENTS.md` names, or a STYLE blockquote at the top of the note, if present.
-2. The repo `CLAUDE.md` or `AGENTS.md`.
+1. The style guide note a premise of the repo names, or a STYLE blockquote at the top of the note, if present.
+2. The `hasPremise` notes of the acts the repo `AGENTS.md` imports.
 3. The global `CLAUDE.md` writing rules.
 
 ## Prose only: never change the meaning
