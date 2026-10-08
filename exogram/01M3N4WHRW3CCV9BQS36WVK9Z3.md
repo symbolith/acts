@@ -5,9 +5,8 @@ type:
   - "[Type Exogram](20260923113859.md)"
   - "[Type Entity](20260923123011.md)"
 subject:
-  - "[Project Implement acts](01M3N4VQ4ZMFJ1DH3GDEZ0N13H.md)"
+  - "[Project Implement Acts](01M3N4VQ4ZMFJ1DH3GDEZ0N13H.md)"
   - "[Software Acts](01M3A6328V1FZSP45F54HD1TS6.md)"
-comment: "Acts and scripts: the skills as plugins of the marketplace acts."
 wasAttributedTo:
   - "[Symbolith](20260816134144.md)"
 reviewLevel: unread
