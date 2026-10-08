@@ -26,7 +26,7 @@ Source footnote lines are exempt because they are citation-exact.
 
 ## Tier 2 — STYLE-grammar conformance (subagent)
 
-The style guide note AGENTS.md names defines the grammar of every element. A
+The style guide note Premise Writing the formalism names defines the grammar of every element. A
 subagent reads that note and checks each body block of the formalism against it, plus the "All"
 constraints and NO USE BEFORE DEFINE. Do not restate the grammar here; read it
 from the note so the check always matches the current rules.
@@ -61,5 +61,5 @@ Cross-artifact:
 
 ## Reading discipline
 
-Read only the canon notes (`reviewLevel: canon`, roles in AGENTS.md) plus
+Read only the canon notes (`reviewLevel: canon`, roles in Premise Writing the formalism) plus
 non-note files. Open no other note without permission. Citation inconsistencies are always critical.

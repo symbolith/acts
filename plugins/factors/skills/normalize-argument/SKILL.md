@@ -14,7 +14,7 @@ One sentence per line; cut anything not load-bearing.
 ## Reading
 
 Running this skill is permission to read non-ground-of-truth notes the reduction needs: the target note, dedup candidates (frontmatter), and the link context of notes that reference or are referenced by the target (inbound links, the paper outline, slot wiring).
-The repo's "do not read other notes" rule does not block these; still read the canon notes named in AGENTS.md first, and read nothing beyond what the reduction requires.
+The repo's "do not read other notes" rule does not block these; still read the canon notes named in Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) first, and read nothing beyond what the reduction requires.
 
 ## Roles (each must earn its note)
 
@@ -48,7 +48,7 @@ An element carries a conclusion, never enumeration or source tokens like class o
 
 ## Grounding
 
-- Base every claim and its evidence on the project's ground-of-truth notes (named in AGENTS.md/CLAUDE.md), not the source's loose framing. An external citation is never the evidence.
+- Base every claim and its evidence on the project's ground-of-truth notes (named in Premise Writing the formalism), not the source's loose framing. An external citation is never the evidence.
 - Provenance always includes the formalism note: whatever a note is grounded in or derived from, `[Factors Formalism](20260518150627.md)` must be among its `wasDerivedFrom` sources (see Note shapes).
 - Term diff: check the source's load-bearing terms against the ground-of-truth vocabulary. Re-ground a stale term to the canonical one, or drop it if the concept is absent. Never carry a term the ground-of-truth does not use.
 - Respect its hedges: a TODO, a simplification, or an out-of-scope remark bounds the claim. Reflect it in the `hasQualifier` list; do not assert past it.

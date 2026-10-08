@@ -7,13 +7,13 @@ allowed-tools: Read, Grep, Glob, Edit, Bash, AskUserQuestion
 
 # Work formalism tasks
 
-Interactive processor for Act notes that change the formalism note, the canon root AGENTS.md names; `<formalism>` below is its id.
+Interactive processor for Act notes that change the formalism note, the canon root Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names; `<formalism>` below is its id.
 One task file per run, two gates, the user decides with the fix in view. The user reruns the skill for the next task.
 SPEED TO THE GATES: reach each gate in the same turn, working alone and inline. The hard work comes AFTER the user picks, never before.
 
 ## Setup (once per run, silent)
 
-1. Read the canon notes (`reviewLevel: canon`; AGENTS.md names them and their roles), the style guide included.
+1. Read the canon notes (`reviewLevel: canon`; Premise Writing the formalism names them and their roles), the style guide included.
 2. The tracker is the Index note whose `relation` names the formalism; its dataview query defines the task set. Take one task: the oldest note the query selects with `state: intended`. Mirror the query with grep, one `grep -l` per `contains` clause; never read the serialized result, it is stale between Obsidian runs. A `potential` act is not yet intended; never work it.
 
 ```
@@ -66,7 +66,7 @@ On a pick, implement. The hard work lives here: under ultracode, Workflow and su
 1. Edit the formalism with the Edit tool, following the style guide, a complete consistency sweep (PERFECTION OVER CHURN), and every repo rule.
 2. Set the formalism note `documentStatus: draft` and STOP; do not validate it yourself.
 3. Delete the task note (`rm`).
-4. Align the two summary views and, on contradiction, the vocabulary, per the AGENTS.md alignment rule.
+4. Align the two summary views and, on contradiction, the vocabulary, per the Premise Writing the formalism alignment rule.
 
 Then STOP; the run is over. Never take a second task, never ask whether to continue.
 
