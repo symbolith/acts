@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash(just:*), AskUserQuestion
 
 # Create Act
 
-Create one note typed `Type Act` or a subtype of it. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
+Create one note typed `Type Act` or a subtype of it; several acts in one request share one research pass, one question round and one preview. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
 
 ## Inputs
 
@@ -27,40 +27,48 @@ The note lives in the exogram of its subject: the folder from `in:`, else the fo
 
 Its notes folder is the exogram workspace root for the Symbolith exogram, the member folder for a notes-only member (`gordian-exogram`, `infai-exogram`), and `<member>/exogram/` for a software member.
 
-Read the `AGENTS.md` in the root of that exogram's repository, when it has one, and obey it. Where it forbids reading notes without permission (factors does), link only by grepping `aliases` lines, never open a note body.
+Read the `AGENTS.md` in the root of that exogram's repository, when it has one, and the `hasPremise` notes of the acts it imports, and obey them. Where a premise forbids reading notes without permission (factors does), link only by grepping `aliases` lines, never open a note body.
 
-### 3. Find Related Notes
+### 3. Research and Fill
 
-For every key of the template, the candidates are:
+Derive a value for every key of the template before asking anything; the fields are the template's keys, never a list from this file. The sources are:
 
+- the conversation: a value the user gave is taken verbatim, never asked again, never reworded
 - the values that notes of the same type in the exogram already hold for that key
-- the notes the act reads and writes, by alias: the candidates for the template's input and output keys
-- other acts in the folder that write what this one reads, or read what this one writes: the candidates for `requires` and `precedes`
+- everything the work will read, found without being told: the canon of the act's subject (the Exogram note's `canon`), its indexes, and the notes on the subject, by alias
+- the premises that govern this kind of work, and every rule the user states for it
 - people and software the description names, grepped in the exogram and in `facts/exogram/`
+- for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`
 
-Cap at the top five candidates per key, confirm by alias and `comment` only.
+Read every source the act names, a URL or a note, before filling a key.
+Read the `comment` of each key's property note in `facts/exogram/` and write the value as the answer to that definition asked of this act itself, never of what its output is later used for; a sentence that does not answer it is no value.
 
-### 4. Ask, Every Run
+Confirm a note by alias and `comment` only. A literal stays a literal.
+An input, output or premise is always a note, never a bare URL or loose text: an external resource is a note of the fitting type (`Type Source` for a text), stated rules are a `Type Premise` note. A missing one is drafted from its template and created with the act.
+Acts created together share their premises, and an act that continues another reads what the other read.
+A value of the wrong type is resolved along the graph, never flagged back: a parent that is a Task gives its own `hasProject` and takes this act into its `requires`.
 
-Ask with `AskUserQuestion`; the fields are the template's keys, never a list from this file, and `aliases`, `type` and `reviewLevel` are set without asking.
+Acts relate only as the formalism relates transitions, through what they read and write (`requires`) and potentials (`hasPotential`), never through `isPartOf`. NEVER write `precedes`: it is the inverse of `requires`, derived by query. Derive the edges, never ask them:
 
-- Ask each `required` field; it has no default and no empty answer.
-- Ask the template's input and output keys: which notes the act reads, which it writes.
-- Offer every remaining `optional` field as a selectable list, over several questions when one cannot hold them all, then ask only the selected ones; the rest are dropped.
-- Every question suggests values: the candidates from step 3, and for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`.
-- A literal answer is written as a literal; no note is ever created to hold an answer.
-- A field the user already answered is never asked again and its answer never reworded.
-- One question settles one decision. A conflict between an answer and another field is asked as that field's question, never deferred to the preview.
-- An answer the schema cannot hold stops the run: name the property and `/exogram:create-property`, change no schema.
+- This act's `requires`: every act in the exogram whose outputs name a note among this act's inputs.
+- Another act's `requires`: this act goes into every act in the exogram whose inputs name a note among this act's outputs.
 
-Acts relate only as the formalism relates transitions, through what they read and write (`requires`, `precedes`) and potentials (`hasPotential`), never through `isPartOf`.
+Grep the frontmatter for these and write the edges. For every other note edited, set its `reviewLevel: unread` and validate it with the new note.
 
-When `requires` or `precedes` comes back empty but the inputs or outputs did not, derive the edges:
+An act that is a potential of another act goes into that act's `hasPotential`: edit the parent note, set its `reviewLevel: unread`, and validate it with the new note.
 
-- `requires`: every act in the exogram whose outputs name a note among this act's inputs.
-- `precedes`: every act in the exogram whose inputs name a note among this act's outputs.
+An `optional` key with no derivable value is dropped, never asked.
 
-Grep the frontmatter for these, list what was derived in the preview, and write the edges into this note only; the other acts stay untouched.
+### 4. Ask Design Questions Only
+
+Ask with `AskUserQuestion`, in one round, only what step 3 could not settle:
+
+- a blocker, asked first: a type or property the act needs and the exogram lacks. Name the skill that creates it (`/exogram:create-type`, `/exogram:create-property`) and change no schema here.
+- a `required` key with no derivable value or with several equally good ones, each option a candidate from step 3
+- a conflict between two derived values
+
+Nothing left to ask means no question: go to the draft. A derived value is corrected in the preview, never confirmed by a question.
+A rejected value is derived again from the reason given and shown in a new preview, never asked back; this overrides the global stop-and-ask rule.
 
 ### 5. Draft
 
@@ -68,13 +76,12 @@ The note is the template, filled; nothing the template lacks is added, and the b
 
 - `aliases[0]`: a title the user gave, verbatim; else the template's alias line decides the shape, and the title of an Act is an imperative sentence naming the state change, e.g. `Add CI for the TLC checks`.
 - `type`: the template chain, verbatim.
-- Every other key: the answer from step 4, a link as `"[<alias>](<id>.md)"`, a literal as a plain string.
+- Every other key: the value from steps 3 and 4, a link as `"[<alias>](<id>.md)"`, a literal as a plain string.
 - `reviewLevel: unread`.
-- A key answered empty is dropped.
 
 ### 6. Preview
 
-Print the complete note, its target path, and the related notes found with one line of justification each, as chat text, then end the turn.
+Print the complete note, every input, output or premise note to create, the target paths, and every derived value with one line of justification, as chat text, then end the turn.
 No `AskUserQuestion` here: text before a tool call is swallowed. The user approves or corrects free-form.
 
 ### 7. Write
@@ -99,7 +106,6 @@ The path of the note written and the links set. Nothing else.
 
 ## Hard Rules
 
-- Never write a canon note (`reviewLevel: canon`) and never edit any existing note; this skill creates the act note, nothing else.
 - Never edit content between dataview-serializer markers.
 - Filename is a ULID from `just ulid`, never invented, never descriptive.
 - Never set `reviewLevel` above `unread`.
@@ -109,7 +115,10 @@ The path of the note written and the links set. Nothing else.
 
 - Hardcoding the subtype list, the type chain or the field set instead of reading `facts/`
 - Naming a property the template does not have
-- Leaving a template key out of the questions
-- Asking every optional field one by one
+- Asking a value that the exogram or the conversation already answers
+- Offering optional fields as a menu
+- Asking the user to supply a value after they rejected one
+- Leaving the user to add inputs or premises the exogram already holds
+- Raising a caveat the user's own rule already settles
 - Writing a body, a heading or a key the template does not have
-- Opening note bodies in an exogram whose `AGENTS.md` forbids it
+- Opening note bodies in an exogram whose premise forbids it
