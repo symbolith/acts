@@ -1,164 +1,102 @@
 ---
 name: triage-inbox
 description: Process and organize the GTD inbox by triaging items into tasks, projects, knowledge notes, ideas, or trash. Use when the user asks to "clean inbox", "process inbox", "triage inbox", "organize inbox", or "clear inbox".
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, ToolSearch, WebSearch, WebFetch
 ---
 
 # Clean Inbox
 
 Process the GTD inbox, the note typed `Type Inbox`, by triaging unprocessed items into proper exogram notes, tasks, or trash. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every relative path below is relative to it.
 
+Every proposal shown to the user is a finished, researched change, so the user only answers yes or no.
+
 ## Step 0: Find the Inbox
 
-Grep the exogram workspace root for `[Type Inbox](20260923141332.md)` in frontmatter, excluding `facts/.templates/` and the type note itself. Exactly one hit is the inbox. Several hits: ask which one with `AskUserQuestion`. None: stop and say so. Never assume a path.
+Search the exogram workspace root for `[Type Inbox](20260923141332.md)` in frontmatter, excluding `facts/.templates/` and the type note itself.
+Member repositories are gitignored: search with `command grep -r` or `rg --no-ignore`.
+Exactly one hit is the inbox. Several hits: ask which one with `AskUserQuestion`. None: stop and say so. Never assume a path.
 
 ## Step 1: Load Context
 
-Read these files first:
+1. Read the inbox note. Only content from the heading `Inbox`, of any level, onwards is inbox material. The task lists above it are NOT inbox; read their names at run time.
+2. Read `facts/exogram.yaml` and `facts/properties.yaml`.
+3. Read every note typed `Type Exogram`, listed under `## Exograms` in the note Workspace Symbolith, `01M3PA7WS8GQQSWT00T1EMKTV1.md`; its `subject` names what the exogram holds.
+4. Inventory the lookup tools: CLIs on the host (`gws` for Google Contacts, Gmail, Calendar), MCP tools through `ToolSearch`, web search. Never say a source is unavailable before this inventory.
 
-1. The inbox note found in Step 0
-2. `AGENTS.md` and the Premise notes it imports with `@` (note creation workflow, schemas, conventions)
+## Step 2: Resolve Sync Conflict Files
 
-**Important:** Only content from the `## Inbox` heading onwards is inbox material. Everything above it (frontmatter and the organized task lists) is NOT inbox. Read the task list names from the note at run time.
+Glob `<inbox folder>/<inbox id> (conflict *).md`. Skip silently if none.
+For each conflict file, append the lines missing from the inbox note to the matching section, add sections the inbox note lacks, never duplicate a line, then `rm` the conflict file.
+Re-read the inbox note.
 
-## Step 1.5: Resolve Sync Conflict Files
+## Step 3: Group
 
-Obsidian/sync conflicts can produce duplicate inbox files matching the pattern `<inbox id> (conflict *).md` in the inbox note's folder.
+Group the raw lines into logical items, then the items into groups that need the same research: one person, one project, one topic.
 
-1. Glob `<inbox folder>/<inbox id> (conflict *).md` to find all conflict copies
-2. For each conflict file:
-   - Read it and the inbox note
-   - Diff their content. For each section, identify lines present in the conflict file but missing from the canonical file
-   - Append those missing lines to the matching section in the inbox note (preserve section structure; do NOT duplicate lines that already exist verbatim)
-   - If the conflict file has sections that the canonical file lacks, add those sections too
-3. After merging, delete each conflict file with `rm`
-4. Re-read the inbox note so subsequent steps see the merged content
+- Lines that continue each other, a label with its sub-items, a code block or tool output with its description, a multi-paragraph draft: one item.
+- A `##` section: one group.
+- Every person named in an item gets identified: the group carries the name and every number, address or hint from the item.
+- Gibberish is Trash.
 
-Skip this step silently if no conflict files exist.
+Do NOT present the grouping. Proceed directly.
 
-## Step 2: Preprocess Sections
+## Step 4: Research in Parallel
 
-Split the inbox content (from `## Inbox` onwards) at `##` headers into sections.
+Launch one Agent per group, all in a single message. This is required whatever the inbox size.
 
-For each section, analyze the raw content and group related lines into logical items. The content is chaotic, so use these heuristics:
+Each agent receives the exact item text, the tool inventory, the task list names, the exogram subjects, and these instructions:
 
-- **Comma-connected lines** (lines ending/starting with commas): group as one item
-- **"label:" + following items**: group label with its sub-items (until next blank-line gap or next label)
-- **Code blocks** (``` ... ```): one item, include surrounding description
-- **Tool output** (lines with `───`, indented output blocks): one item with its description
-- **Bullet lists** (consecutive `- ` lines): one group if related, separate items if distinct topics
-- **Existing `- [ ]` tasks**: one item each
-- **Markdown links** (`[text](file.md)`): one item, preserve link
-- **Multi-paragraph prose**: one item (draft emails, ideas, reflections)
-- **Standalone single words**: could be person name, topic, or trash. Flag as ambiguous.
-- **Gibberish** (random characters): classify as Trash
-- **`###` subsections**: treat as separate item groups within the parent section
+- Search the exogram workspace root for related notes, existing projects and Person notes.
+- Resolve every person through Google Contacts, then mail, then Person notes. A number or address is looked up, never guessed.
+- A lookup that contradicts the item is reported with what was found. Data is recorded as written in the item, never judged or corrected.
+- Follow each lead to the end with the available tools before returning. Never return a question a tool can answer.
+- Do NOT write files.
 
-Do NOT present groupings to the user. Proceed directly to triage.
+Each agent returns per item the finished change:
 
-## Step 3: Triage via Subagents
+- The action: new note, append to a note, task on a project or task list, Trash, or Skip.
+- For a new note: the type from the `type` enum of `facts/exogram.yaml`, the full file content, and the target exogram. The item's organization, person or project must match an exogram's `subject`. NEVER fall back to the default exogram. If no `subject` settles it, return `undecided` and say why.
+- For an append or a task: the target note and the exact lines.
+- What was found and with which tool, in one or two lines.
+- A best guess is mandatory. What stays unverified is named as unverified.
 
-For each section, launch an Agent subagent to research and propose classifications. Launch multiple subagents in parallel (one per section or batch of sections).
+## Step 5: Confirm and Apply
 
-Each subagent receives:
-- All item contents (exact text from inbox) for its section(s)
-- The section name(s)
-- Instruction to read `facts/exogram.yaml` and `facts/properties.yaml` for note types
-- Instruction to search the exogram workspace root for related notes and existing projects
-- Instruction to read every note typed `Type Exogram` (one ULID note per exogram, listed under `## Exograms` in the note Workspace Symbolith, `01M3PA7WS8GQQSWT00T1EMKTV1.md`); its `subject` names the subject matter the exogram holds
+As each agent returns, show its changes with `AskUserQuestion`, one question per item. Do not wait for the other agents.
 
-Each subagent must return per item:
-- **Proposed classification**: one of the note types in the `type` enum of `facts/exogram.yaml`, read live, never from a remembered list, OR "Task", OR "Trash", OR "Skip"
-- **If Task**: proposed target (existing project note path, or "new project", or the name of one of the task lists above `## Inbox`)
-- **If new note**: suggested alias/title and any related notes found in the exogram workspace
-- **If new note**: the target exogram, decided per item: the item's organization, person or project must match an exogram's `subject`. NEVER fall back to the default exogram. If no `subject` settles it, return "undecided" and say why
-- **Reasoning**: one sentence explaining the classification
+Every note shown to the user, here and in the report, is `Alias file:./<path>:1:1`, alone on its line, the path relative to the working directory.
 
-The subagent must make a decision for every item. Never flag items as "ambiguous" without also providing a best-guess classification.
-
-### Subagent Prompt Template
-
-```
-Triage these inbox items from a personal Zettelkasten exogram.
-
-**Section:** ## {section_name}
-**Items:**
-{item_list_with_numbers}
-
-The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
-Read `facts/exogram.yaml` and `facts/properties.yaml` for note types.
-Search the exogram workspace root for existing notes related to these items (use Grep and Glob).
-
-For EACH item return a JSON object:
-{
-  "item_number": <N>,
-  "classification": "<note type from exogram.yaml | Task | Trash | Skip>",
-  "target": "<for Tasks: alias and path relative to the exogram workspace root of an existing project note, 'new project', or one of these task lists: {task_list_names}>",
-  "alias": "<suggested title for new notes>",
-  "related_notes": [{"alias": "<alias of a related note found>", "path": "<its path relative to the exogram workspace root>"}],
-  "reasoning": "<one sentence explaining classification>"
-}
-
-You MUST pick the best classification for every item. Do not leave any unclassified.
-```
-
-## Step 4: Item-by-Item User Confirmation
-
-Present each item one at a time using `AskUserQuestion`. Work through all items sequentially.
-
-Every note shown to the user, here and in the Step 6 report, is `Alias file:./<path>:1:1`, alone on its line, the path relative to the working directory.
-
-For each item, show:
+Each question shows:
 
 ```
 **[N/total]** from `## SectionName`
 
 > original text exactly as it appears in inbox
 
-**Proposed:** Classification → new alias, or for an existing note:
-Alias file:./<path>:1:1
-**Exogram:** target exogram for a new note, or `undecided`
-**Why:** one-sentence reasoning
-**Related:**
-Alias file:./<path>:1:1
+**Change:** the exact lines and their target note, or the new note's alias, type and exogram
+**Found:** what the research turned up, and what is unverified
 ```
 
-Wait for the user's response before showing the next item:
-- **y** (or empty/continuation): accept the proposal
-- **n**: skip this item (leave in inbox)
-- **Any other text**: treat as override instructions (e.g. "trash", "task on ProjectX", "merge with previous")
+On the answer:
 
-An `undecided` exogram is never accepted with **y**: ask which exogram the note goes into.
+- **yes**: apply the change at once, remove the item from the inbox, run `just validate` on every edited note.
+- **no**: leave the item in the inbox. Do not invent a replacement; ask what the user wants.
+- **Any other text**: treat as instructions, research again if they name a new lead, apply.
 
-Collect all confirmed actions before executing.
+An `undecided` exogram is never accepted with yes: ask which exogram the note goes into.
 
-## Step 5: Execute
+Applying follows the note creation workflow of the Premise notes:
 
-Process all confirmed items in batch. Follow the note creation workflow of the Premise notes read in Step 1 for new notes:
-1. Read schemas (`facts/exogram.yaml`, `facts/properties.yaml`)
-2. Search the exogram workspace for existing related notes to link
-3. Create note with proper frontmatter (ULID filename from `just ulid`, aliases, the `type` chain copied from the type's template, required properties)
+- New note: ULID filename from `just ulid`, frontmatter from the type's template. Read the `AGENTS.md` in the root of the target exogram's repository first, if it has one, and the `hasPremise` notes of the acts it imports.
+- Task on a project: append a `- [ ]` line to the project note. A new project gets its Project note first.
+- Task on a task list: append to the matching list above the inbox heading.
+- Re-read the inbox note before each edit: the user edits it while the triage runs.
 
-For each classification:
+## Step 6: Report
 
-- **Note type** → Create new note per that workflow, in the confirmed target exogram. Read the `AGENTS.md` in the root of that exogram's repository first, if it has one
-- **Task + existing project** → Append `- [ ]` line to the project note
-- **Task + new project** → Create Project note first (per that workflow), then append task
-- **Task + task list** → Append to the matching task list above `## Inbox`
-- **Trash** → Just remove from inbox (no note created)
-- **Skip** → Leave in place
+Delete inbox sections that are now empty, then report:
 
-## Step 6: Clean Up
-
-After all items are processed:
-
-1. Remove processed items from their `##` sections in the inbox file
-2. Delete `##` sections that are now empty (header + only whitespace remaining)
-3. Leave skipped items in their original sections
-4. Verify the inbox file is still valid markdown
-
-Report summary:
 - Notes created
 - Tasks added, with their target notes
 - Items trashed
-- Items skipped (still in inbox)
+- Items still in the inbox, each with the reason
