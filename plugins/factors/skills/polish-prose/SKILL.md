@@ -48,7 +48,7 @@ Hunt these defects:
 For each target:
 
 1. State in one line what the passage must say.
-2. Draft the smallest rewrite to the style rules. One sentence per line where the note does so. Cut, do not pad; net length should not grow.
+2. Draft the rewrite to the style rules. One sentence per line where the note does so. Cut, do not pad; net length should not grow.
 3. Drop anything that does not follow from the passage's own subject.
 4. Show each site as `file:<path>:LINE:COL`, verbatim before and after; get approval. `--dry-run` stops here.
 5. Apply with `Edit` only. Never `Write`, `sed`, or `echo`; never touch auto-generated blocks.
