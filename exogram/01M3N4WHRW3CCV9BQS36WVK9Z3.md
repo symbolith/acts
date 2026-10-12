@@ -9,7 +9,7 @@ subject:
   - "[Software Acts](01M3A6328V1FZSP45F54HD1TS6.md)"
 wasAttributedTo:
   - "[Symbolith](20260816134144.md)"
-reviewLevel: unread
+vetting: unread
 ---
 ## Indexes
 

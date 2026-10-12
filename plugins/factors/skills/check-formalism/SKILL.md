@@ -28,8 +28,8 @@ ground-of-truth note and wait for confirmation.
 
 ## Reading discipline (non-negotiable)
 
-Per the repo CLAUDE.md, read only the canon notes (`reviewLevel: canon`; find
-them with `grep -l '^reviewLevel: canon' *.md ../../facts/exogram/*.md` run in
+Per the repo CLAUDE.md, read only the canon notes (`noteRole: canon`; find
+them with `grep -l '^noteRole: canon' *.md ../../facts/exogram/*.md` run in
 `factors/exogram/`, their roles are in Premise Writing the formalism) and non-note files (schemas,
 TLA+ specs, justfile).
 The vocabulary among them is the `fctrs:` type and property notes in

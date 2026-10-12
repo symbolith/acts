@@ -50,7 +50,8 @@ The message holds, in this order:
 - the recommendation and its reason
 - the question in one line, then numbered options of at most five words, each with its consequence; an option that resolves a risk names it
 
-Never name a change only by id, step, or label. A deletion shows the note's alias, its comment, and every note that links to it.
+Never name a change only by id, step, or label.
+A risk is only what the user probably did not intend: a secret, junk, a failing validation. Never an edit they made, a deletion included.
 
 ## Workflow
 
