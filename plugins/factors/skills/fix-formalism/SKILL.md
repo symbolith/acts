@@ -33,8 +33,8 @@ Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuest
 ## Do
 
 1. State the lesson in one line: what was misread, the correct reading. Not crisp -> ask.
-2. Draft the smallest exact edit, conforming to STYLE's All constraints and to
-   NO USE BEFORE DEFINE.
+2. Draft the exact edit, swept over every site it touches, conforming to STYLE's
+   All constraints and to NO USE BEFORE DEFINE.
 3. Show the `file:./20260518150627.md:LINE:COL` site and the verbatim change;
    note it edits a ground-of-truth note; get approval. `--dry-run` stops here.
 4. Apply with Edit only (the Premise Writing the formalism Edit rule: never Write/`sed`/`echo`,
