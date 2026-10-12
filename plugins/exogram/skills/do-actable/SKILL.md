@@ -31,8 +31,25 @@ allowed-tools: Read, Grep, Glob, Edit, Bash(just:*)
 
 5. Read the act's `hasIntent`, `hasApplicability`, and every `hasInput` and `hasPremise` note in full.
 6. Set `state: claimed` and `lead` to the current agent.
-7. Do the act: produce every note `hasOutput` names. When it needs acts that do not exist yet, create them with `/exogram:create-act`, link them in `hasPotential`, and enact them by this skill.
-8. Set `state: succeeded` when every `hasOutput` exists, else `failed`, then `just validate <file>`.
+7. Propose the plan as the final chat message in this template, then STOP until the user agrees.
+   Show the issue, the source lines, and the changed lines verbatim, never a description of them.
+
+   ```
+   ## Issue
+   <what is wrong and what it breaks, three short sentences at most>
+
+   ## Source
+   <per place the issue shows: file link, then its lines quoted verbatim>
+
+   ## Fix
+   <per changed place: file link, then a diff of old and new lines>
+
+   ## Open questions
+   <question, then the recommended answer>
+   ```
+
+8. Do the act: produce every note `hasOutput` names. When it needs acts that do not exist yet, create them with `/exogram:create-act`, link them in `hasPotential`, and enact them by this skill.
+9. Set `state: succeeded` when every `hasOutput` exists, else `failed`, then `just validate <file>`.
 
 ### Factor, a Project included
 
