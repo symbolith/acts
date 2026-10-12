@@ -35,16 +35,16 @@ Derive a value for every key of the template before asking anything; the fields 
 
 - the conversation: a value the user gave is taken verbatim, never asked again, never reworded
 - the values that notes of the same type in the exogram already hold for that key
-- everything the work will read, found without being told: the canon of the act's subject (the Exogram note's `canon`), its indexes, and the notes on the subject, by alias
+- everything the work will read, found without being told: the canon of the act's subject (`noteRole: canon`, listed in Index Canon), its indexes, and the notes on the subject, by alias
 - the premises that govern this kind of work, and every rule the user states for it
 - people and software the description names, grepped in the exogram and in `facts/exogram/`
 - for an enumerated range (`state`: the notes typed `Type State`) its members, each by the local name of its `iri`
 
 Read every source the act names, a URL or a note, before filling a key.
-Read the `comment` of each key's property note in `facts/exogram/` and write the value as the answer to that definition asked of this act itself, never of what its output is later used for; a sentence that does not answer it is no value.
+Write each value as the answer to its property's definition asked of this act itself, the change it makes to its outputs, never of how the thing it adds behaves nor of what its output is later used for; a sentence that does not answer it is no value.
 
 Confirm a note by alias and `comment` only. A literal stays a literal.
-An input, output or premise is always a note, never a bare URL or loose text: an external resource is a note of the fitting type (`Type Source` for a text), stated rules are a `Type Premise` note. A missing one is drafted from its template and created with the act.
+An input, output or premise is always a note, never a bare URL or loose text: an external resource is a note of the fitting type (`Type Source` for a text), rules that several acts share are a `Type Premise` note. A missing one is drafted from its template and created with the act.
 Acts created together share their premises, and an act that continues another reads what the other read.
 A value of the wrong type is resolved along the graph, never flagged back: a parent that is a Task gives its own `hasProject` and takes this act into its `requires`.
 
@@ -53,9 +53,9 @@ Acts relate only as the formalism relates transitions, through what they read an
 - This act's `requires`: every act in the exogram whose outputs name a note among this act's inputs.
 - Another act's `requires`: this act goes into every act in the exogram whose inputs name a note among this act's outputs.
 
-Grep the frontmatter for these and write the edges. For every other note edited, set its `reviewLevel: unread` and validate it with the new note.
+Grep the frontmatter for these and write the edges. For every other note edited, set its `vetting: unread` and validate it with the new note.
 
-An act that is a potential of another act goes into that act's `hasPotential`: edit the parent note, set its `reviewLevel: unread`, and validate it with the new note.
+An act that is a potential of another act goes into that act's `hasPotential`: edit the parent note, set its `vetting: unread`, and validate it with the new note.
 
 An `optional` key with no derivable value is dropped, never asked.
 
@@ -72,12 +72,14 @@ A rejected value is derived again from the reason given and shown in a new previ
 
 ### 5. Draft
 
-The note is the template, filled; nothing the template lacks is added, and the body stays as the template has it.
+The note is the template, filled; nothing the template lacks is added.
+The body is the act's own premise, the specification of what it is to realise, one sentence per line, never a literal key; without one it stays as the template has it.
+`abstract` summarises that body and exists only with it.
 
 - `aliases[0]`: a title the user gave, verbatim; else the template's alias line decides the shape, and the title of an Act is an imperative sentence naming the state change, e.g. `Add CI for the TLC checks`.
 - `type`: the template chain, verbatim.
 - Every other key: the value from steps 3 and 4, a link as `"[<alias>](<id>.md)"`, a literal as a plain string.
-- `reviewLevel: unread`.
+- `vetting: unread`.
 
 ### 6. Preview
 
@@ -108,17 +110,16 @@ The path of the note written and the links set. Nothing else.
 
 - Never edit content between dataview-serializer markers.
 - Filename is a ULID from `just ulid`, never invented, never descriptive.
-- Never set `reviewLevel` above `unread`.
+- Never set `vetting` above `unread`, never set `noteRole`.
 - No note is written before the user approved the preview.
 
 ## Anti-patterns
 
 - Hardcoding the subtype list, the type chain or the field set instead of reading `facts/`
 - Naming a property the template does not have
-- Asking a value that the exogram or the conversation already answers
+- Asking a value that the exogram or the conversation already answers, or again after the user rejected one
 - Offering optional fields as a menu
-- Asking the user to supply a value after they rejected one
 - Leaving the user to add inputs or premises the exogram already holds
 - Raising a caveat the user's own rule already settles
-- Writing a body, a heading or a key the template does not have
+- Writing a heading or a key the template does not have
 - Opening note bodies in an exogram whose premise forbids it
