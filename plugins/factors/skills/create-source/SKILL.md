@@ -25,7 +25,7 @@ Conventions the template does not spell out:
 
 - `iri` is the first key: the work's DOI as `"[doi:<doi>](https://doi.org/<doi>)"`, or, without a DOI, its URL as `"[<host>](<url>)"`.
 - `issued` is a quoted string: `"YYYY"`, `"YYYY-MM"` or `"YYYY-MM-DD"`, as precise as the record allows.
-- `reviewLevel: unread`.
+- `vetting: unread`.
 
 ## Procedure
 

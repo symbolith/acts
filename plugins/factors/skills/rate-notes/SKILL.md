@@ -49,7 +49,7 @@ about 8 concurrent for large sets). Give each subagent:
   absolute path),
 - the instruction to rate the concept only, write `qualityRating: N` and
   `hasVerdict` (the one-line rationale) to that note's frontmatter, set
-  `reviewLevel: unread` (preserving body and dataview blocks), and return a
+  `vetting: unread` (preserving body and dataview blocks), and return a
   compact result: `{ path, alias, type, rating, oneLineRationale }`.
 
 Each subagent reads and edits only its own note.

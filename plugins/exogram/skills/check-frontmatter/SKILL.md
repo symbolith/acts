@@ -26,6 +26,6 @@ It runs `~/repositories/symbolith-exogram/exogram/scripts/validate.py` in the po
 3. Fix only what has one derivable answer: a string where the schema wants an array, a date not in `YYYY-MM-DD`, a number where the schema wants a string, a `type` link missing `.md`.
    Never edit type files, `exogram.yaml` or `properties.yaml`; all three are generated. Attachment lives on the type note (`requiredProperty`, `optionalProperty`), a property's value shape on its property note (`range`, `characteristic: functional`). Change the note, run `just templates`, then `just validate`.
 4. Never guess. Missing required values, invalid enum values, and unknown properties are reported, not fixed. The notes may be right and the schema wrong: ask with `AskUserQuestion` when one decision settles a whole group.
-5. On every edited note set `reviewLevel: unread`. Never edit a `reviewLevel: canon` note without asking; a canon edit also gets `documentStatus: draft`.
+5. On every edited note set `vetting: unread`. Never edit a `noteRole: canon` note without asking.
 6. Run `just validate` again on the edited files.
 7. Report as a table: issue group, count, fixed or open.

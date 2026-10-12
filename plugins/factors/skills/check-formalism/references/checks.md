@@ -61,5 +61,5 @@ Cross-artifact:
 
 ## Reading discipline
 
-Read only the canon notes (`reviewLevel: canon`, roles in Premise Writing the formalism) plus
+Read only the canon notes (`noteRole: canon`, roles in Premise Writing the formalism) plus
 non-note files. Open no other note without permission. Citation inconsistencies are always critical.

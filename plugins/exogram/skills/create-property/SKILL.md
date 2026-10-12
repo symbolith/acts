@@ -41,15 +41,15 @@ The value shape lives on the property note (step 2b); `properties.yaml` is gener
 | `xsd:date`, `xsd:dateTime` | date string |
 | `rdfs:Literal` | any literal |
 | `rdfs:Resource` | a link or a literal |
-| a type note whose instances all carry an `iri` in one namespace (State, ReviewLevel, DocumentStatus) | enum of those local names |
+| a type note whose instances all carry an `iri` in one namespace (State, Vetting, NoteRole) | enum of those local names |
 | any other class, or absent | a link |
 
 - A fixed set of values is a value-set class: a type note plus one note per value carrying the value's `iri`, made with `/exogram:create-type`; the property's `range` names that type note.
-- No `description` in a note: the one-line definition lives only in the note's `comment`. `just templates` copies it into `properties.yaml` as the property's `description`.
+- No `description` in a note: `just templates` copies the note's `comment` into `properties.yaml` as the property's `description`.
 
 ### 2b. Write the Property Note
 
-Every property has a note in `facts/exogram/`, typed `Type Property`. File: `facts/exogram/<ULID>.md`, the id from `just ulid` run in the exogram workspace root. Fill `file:~/repositories/symbolith-exogram/facts/.templates/Property.md`, alias `Property <name>`, drop every key still set to `optional`, add `reviewLevel: unread`. When `iri` is a term of an existing vocabulary, `comment` is that vocabulary's own definition of the term, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` term gets a definition written here: one sentence, no example, never naming the term (the `iri` carries it). The sentence states only what no key states: no inverse, derivation, usage rule, or what the term is not; those live in `inverseOf`, `hasPrimitive`, and `characteristic`. Body: copy the template body verbatim, the `Superproperties`, `Subproperties`, `Inverse of`, and `Usage` query blocks. Write only the query comments, never a result block; the plugin generates results once the note is saved in Obsidian.
+Every property has a note in `facts/exogram/`, typed `Type Property`. File: `facts/exogram/<ULID>.md`, the id from `just ulid` run in the exogram workspace root. Fill `file:~/repositories/symbolith-exogram/facts/.templates/Property.md`, alias `Property <name>`, drop every key still set to `optional`, add `vetting: unread`. When `iri` is a term of an existing vocabulary, `comment` is that vocabulary's own definition of the term, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` term gets a definition written here: one sentence, no example, never naming the term (the `iri` carries it). The sentence states only what no key states: no inverse, derivation, usage rule, or what the term is not; those live in `inverseOf`, `hasPrimitive`, and `characteristic`. Body: copy the template body verbatim, the `Superproperties`, `Subproperties`, `Inverse of`, and `Usage` query blocks. Write only the query comments, never a result block; the plugin generates results once the note is saved in Obsidian.
 
 - `iri` is the first key: the IRI the property denotes, as a markdown link labelled with the compact IRI, e.g. `iri: "[dcterms:subject](http://purl.org/dc/terms/subject)"`. Never a bare prefixed term. The `@context` of `properties.yaml` is generated from the compact IRIs on the type and property notes; a new prefix needs nothing beyond its first use.
   - Ontology term: `iri` is that term.
@@ -67,7 +67,7 @@ Every property has a note in `facts/exogram/`, typed `Type Property`. File: `fac
 
 Attachment only feeds templates. The root declaration in step 5 already makes the property valid on every note.
 A property with a `domain` is attached to that domain type, required or optional.
-A property without a `domain` that fits any note stays unattached, like `reviewLevel`.
+A property without a `domain` that fits any note stays unattached, like `vetting`.
 A property without a `domain` that fits some unrelated types is attached to each of them.
 
 ### 4. Ask User for Assignment

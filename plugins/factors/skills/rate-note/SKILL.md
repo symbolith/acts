@@ -46,7 +46,7 @@ parsimony, fruitfulness) tune within it. Produce one integer 1-5.
 ### 5. Write the rating
 
 Add or update `qualityRating: N` and `hasVerdict` (the one-sentence
-justification) in the note's frontmatter, and set `reviewLevel: unread`.
+justification) in the note's frontmatter, and set `vetting: unread`.
 Preserve all other frontmatter and body content. Never edit inside
 `dataview-serializer` blocks or any other auto-generated region.
 

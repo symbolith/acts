@@ -44,7 +44,7 @@ Read the ontology notes (`type: Type Ontology`) and the existing type notes. Dec
 - Subtypes: existing types that become subclasses of the new type. Their current `subClassOf` moves up to the new type when it still holds for all of them.
 - `disjointWith`: types no note may carry together with this one, e.g. Success, Plan and Failure pairwise. Set it on BOTH sides.
 - Own properties: every property a note of this type carries, each required or optional. A type note is self-contained: nothing is inherited, so a subtype repeats what its supertype attaches. Each property must have a property note, and that note's `domain` must name this type or a supertype of it, or be absent. Use `/exogram:create-property` for new ones and for a domain that needs widening.
-- `comment`: the single home of the definition; `exogram.yaml` and `types/<Title>.yaml` carry no `description` of the type. When `iri` is a class of an existing vocabulary, `comment` is that vocabulary's own definition of the class, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` class gets a definition written here: one sentence, what it is in the ontology view, no example, never naming the term (the `iri` carries it). The sentence states only what no key states: no listing of subtypes, supertypes, disjoint types, second names, or what the term is not; those live in `subClassOf`, `disjointWith`, and `aliases`.
+- `comment`: the single home of the definition; `exogram.yaml` and `types/<Title>.yaml` carry no `description` of the type. When `iri` is a class of an existing vocabulary, `comment` is that vocabulary's own definition of the class, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` class gets a definition written here: what it is in the ontology view, no example, never naming the term (the `iri` carries it).
 
 ### 3. Show the Design
 
@@ -54,7 +54,7 @@ Present the type note frontmatter, the subtype edits, and the schema edits. Wait
 
 File: `facts/exogram/<ULID>.md`, the id from `just ulid` run in the exogram workspace root.
 
-Frontmatter: fill `.templates/Type.md`. `iri` is the first key. The alias is `Type <Title>`. Leave `template` out: `just templates` in step 6 writes it. Drop every property still set to `optional`. Add `reviewLevel: unread`.
+Frontmatter: fill `.templates/Type.md`. `iri` is the first key. The alias is `Type <Title>`. Leave `template` out: `just templates` in step 6 writes it. Drop every property still set to `optional`. Add `vetting: unread`.
 
 Body: copy the body of `.templates/Type.md` verbatim, the `Supertypes`, `Subtypes`, `Domain of`, `Range of`, and `Instances` query blocks. Write only the query comments, never a result block; the plugin generates results once the note is saved in Obsidian.
 
@@ -74,9 +74,9 @@ Only the alias line and the body are hand-written and the generator keeps them. 
 
 ### 7. Rewire the Subtypes
 
-For each subtype note set `subClassOf` to the single item `"[Type <Title>](<id>.md)"` and `reviewLevel: unread`. Touch nothing between dataview-serializer result markers.
+For each subtype note set `subClassOf` to the single item `"[Type <Title>](<id>.md)"` and `vetting: unread`. Touch nothing between dataview-serializer result markers.
 
-Then copy into each subtype note the entries of the new type the subtype should carry and run `just templates`. Existing notes stay as they are: they never list the new supertype. Only when a query selects notes by the new type, add to each subtype note the `requiredProperty` entry with `property: "[Property type](20260923120432.md)"` and `value: "[Type <Title>](<id>.md)"`, and insert `"[Type <Title>](<id>.md)"` into `type` of EVERY existing note of a subtype, right after the subtype entry; `just validate` reports `missing [Type <Title>](<id>.md)` on every note that lacks it; run it until clean. A canon note gets `documentStatus: draft` instead of a `reviewLevel` change.
+Then copy into each subtype note the entries of the new type the subtype should carry and run `just templates`. Existing notes stay as they are: they never list the new supertype. Only when a query selects notes by the new type, add to each subtype note the `requiredProperty` entry with `property: "[Property type](20260923120432.md)"` and `value: "[Type <Title>](<id>.md)"`, and insert `"[Type <Title>](<id>.md)"` into `type` of EVERY existing note of a subtype, right after the subtype entry; `just validate` reports `missing [Type <Title>](<id>.md)` on every note that lacks it; run it until clean.
 
 ### 8. Verify
 
