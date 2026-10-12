@@ -1,13 +1,13 @@
 ---
 name: normalize-argument
-description: Reduce a verbose note into normalized Toulmin/AMO argument notes, one Claim note linking deduped Evidence/Warrant/Rebuttal element notes and carrying its qualifier as a field. Use when the user asks to "reduce a note", "decompose an argument", "split into Toulmin", "normalize an argument", or "turn this note into a Claim".
+description: Reduce a verbose note into normalized Toulmin/AMO argument notes, one Claim note and one Argument note that links the Claim to deduped Evidence/Warrant/Rebuttal element notes and carries the qualifier as a field. Use when the user asks to "reduce a note", "decompose an argument", "split into Toulmin", "normalize an argument", or "turn this note into a Claim".
 argument-hint: <note id or path>
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
 ---
 
 # Reduce Argument
 
-Reduce one verbose note into one Claim note linking separate Evidence, Warrant, and Rebuttal element notes, carrying its qualifier in the Claim's `hasQualifier` field.
+Reduce one verbose note into one Claim note and one Argument note; the Argument links the Claim through `hasClaim` and the separate Evidence, Warrant, and Rebuttal element notes through its slots, and carries the qualifier in `hasQualifier`.
 Shared elements dedup to one note reused across claims.
 One sentence per line; cut anything not load-bearing.
 
@@ -21,11 +21,11 @@ The repo's "do not read other notes" rule does not block these; still read the c
 - Claim: the assertion. See Claim test.
 - Evidence: the fact or data, not the inference. Relevant, verifiable, traced to a primary source.
 - Warrant: the inference rule linking evidence to claim. Name its type (generalization, analogy, sign, causality, authority, principle); make it one a reader struggles to deny.
-- Qualifier: the force and scope ("guaranteed for X", "only at layer Y"). Goes in the Claim's `hasQualifier` list as a plain value, distilled to fit the quality bar; a Qualifier is a field, never its own note. If a supposed qualifier cannot fit one short field value (it rests on a citation, or is a counter that stands on its own), it is not a qualifier; classify it as its real role. Skip when plain from the claim.
+- Qualifier: the force and scope ("guaranteed for X", "only at layer Y"). Goes in the Argument's `hasQualifier` list as a plain value, distilled to fit the quality bar; a Qualifier is a field, never its own note. If a supposed qualifier cannot fit one short field value (it rests on a citation, or is a counter that stands on its own), it is not a qualifier; classify it as its real role. Skip when plain from the claim.
 - Rebuttal: the condition under which the claim fails, the strongest counter not a strawman. Always its own note, never a field; skip when merely hypothetical.
 
 Default: the Claim plus only the elements that carry weight, never a five-role spread to trim.
-The `hasEvidence`, `hasWarrant`, and `hasRebuttal` slots are lists linking an element note or another Claim used as grounds; `hasQualifier` is a list of plain values, not links.
+The Argument's `hasEvidence`, `hasWarrant`, and `hasRebuttal` slots are lists linking an element note or another Claim used as grounds; `hasQualifier` is a list of plain values, not links.
 
 ## Claim test
 
@@ -57,6 +57,7 @@ An element carries a conclusion, never enumeration or source tokens like class o
 
 Frontmatter comes from the type's template in `~/repositories/symbolith-exogram/facts/.templates/`, read at run time; this skill states none.
 Element: short alias, one self-contained sentence in `comment` (no reference to its claim, so it stays reusable), empty body.
+Argument: alias `Argument <Claim alias>`, `hasClaim`, the slots, `wasDerivedFrom` as on its Claim, no `comment`, empty body; the Claim carries no slot.
 `wasDerivedFrom` must always contain the formalism note `[Factors Formalism](20260518150627.md)`, on every Claim, Evidence, Warrant, and Rebuttal, no exceptions; when a source note is rewritten in place, add the formalism note to its existing provenance, keeping both.
 It may hold more than the formalism note: list every note the content was actually built from, such as the note reduced or a cited `Source`, and never drop one to leave a single source standing.
 A note consulted only to check the result, not to build it, is grounding, not derivation: keep it out of `wasDerivedFrom`.
@@ -78,10 +79,10 @@ Mint a `Source` via `/factors:create-source`, never by hand, never as prose. If 
    ```
    - same: reuse its link, mint nothing.
    - broader or narrower: `broader` on the specific note, `narrower` on the general one.
-   - grounds: an element goes into the slot of the claim it supports, existing or new.
+   - grounds: an element goes into the slot of the Argument of the claim it supports, existing or new.
    - adjacent: link it in `relation`.
 6. Confirm the claim wording with the user first, then the plumbing (AskUserQuestion). Show the source beside the proposed set, each sentence marked kept/cut/re-grounded, the candidates with their relations, plus the claim's consequence and falsifier. Prefer folding over defending a weak claim; recommend dropping if too thin, ungrounded, or duplicative.
-7. The exogram workspace root is `~/repositories/symbolith-exogram`; run every `just` recipe from there. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `reviewLevel: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
+7. The exogram workspace root is `~/repositories/symbolith-exogram`; run every `just` recipe from there. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
 8. Report: ids written, reused vs created.
 9. Propose the next candidate. Name the single most likely note to reduce next, preferring an un-reduced `Idea` or other verbose note surfaced during dedup (step 5) whose `comment` bundles several claims, especially one an element just written links to or sits adjacent to. Give a one-line reason for the pick, or state that none surfaced; never reduce it without a fresh go-ahead.
 
