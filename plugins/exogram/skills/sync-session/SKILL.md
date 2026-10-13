@@ -39,7 +39,7 @@ Per listed file, with read-only git:
 | outside the exogram workspace root | drop, report as not synced |
 | ignored by git | drop, report |
 | no change in `git status --porcelain -- <file>` | drop: already committed or reverted |
-| `git diff --no-ext-diff HEAD -- <file>` holds a hunk the session did not write | cut the diff down to the session's hunks, a mixed hunk to the session's lines, save it as a patch that passes `git apply --cached --check`, and list the file with it |
+| `git diff --no-ext-diff HEAD -- <file>` holds a hunk the session did not write | run `python3 ~/repositories/symbolith-exogram/acts/plugins/exogram/skills/sync-session/scripts/session-patch.py <transcript> <file> > <scratch patch>` and list the file with the patch; if it fails, a session edit stands on a foreign hunk: list the file whole, with the reason |
 | refers to an uncommitted file | add that file, with the reason |
 
 The session's edits seed the list; everything they need to stand joins it.
@@ -52,7 +52,7 @@ An empty list: stop and say the session left nothing uncommitted.
 Otherwise:
 
 1. Print the list grouped by repository, a note with its alias, a file with a patch marked `hunk only`, and every added or dropped file with its reason.
-2. Write the list to a scratch file by absolute path, one line per file: its path relative to the exogram workspace root, then a tab and the absolute path of its patch when it has one.
+2. Redirect the list into a scratch file by absolute path, one line per file: its path relative to the exogram workspace root, then a tab and the absolute path of its patch when it has one.
 3. Invoke `exogram:sync-workspace` with `--files-from <scratch file> $ARGUMENTS`.
 
 The package gate of `exogram:sync-workspace` is where the user corrects the list.
@@ -60,6 +60,7 @@ The package gate of `exogram:sync-workspace` is where the user corrects the list
 ## Anti-patterns
 
 - A state-changing git command in this skill
+- An Edit or Write call: a scratch file comes from a Bash redirect
 - A list built from memory, without the transcript
 - A file or hunk listed because it is changed, not because the session wrote or needs it
 - A commit that refers to something uncommitted

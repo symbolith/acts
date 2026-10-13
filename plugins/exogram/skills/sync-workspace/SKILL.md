@@ -33,7 +33,7 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 | Repositories | only those that hold a listed file |
 | Pull | `just validate` takes the listed files that still exist, not the whole exogram workspace |
 | Survey | `changes` counts the listed files, and a second count gives the other changed files |
-| Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. The gate names every other changed file as left out |
+| Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. Each patch first passes `git -C <folder> apply --cached --check <patch>`; one that fails stops the run before the gate. The gate names every other changed file as left out |
 | Commit | a file with a patch, listed or built from hunks the user picked, is staged with `git apply --cached <patch>`, never with `add -A` |
 | Remote Settings | skipped |
 
