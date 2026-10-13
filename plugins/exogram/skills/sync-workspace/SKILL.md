@@ -12,12 +12,13 @@ Sync the exogram workspace: pull what the remotes have, then land what the host 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
 Every gate covers all repositories at once.
 Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: podman, commit signing, and SSH fail inside it.
+A state-changing command is never piped or filtered; after each one assert the state it should have produced, and stop at the first mismatch.
 Scratch files use absolute paths, since `$TMPDIR` differs inside and outside the sandbox.
 
 ## Inputs
 
 - `$ARGUMENTS`: optional repository folders to limit the run. Default is every repository.
-- `--files-from <file>`: optional absolute path of a file that lists one path per line, relative to the exogram workspace root. It limits the run to those files, see File Scope.
+- `--files-from <file>`: optional absolute path of a file that lists one path per line, relative to the exogram workspace root, each optionally followed by a tab and the absolute path of a patch. It limits the run to those files, and a file with a patch to that patch, see File Scope.
 
 ## Repositories
 
@@ -32,11 +33,11 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 | Repositories | only those that hold a listed file |
 | Pull | `just validate` takes the listed files that still exist, not the whole exogram workspace |
 | Survey | `changes` counts the listed files, and a second count gives the other changed files |
-| Package | only listed files are read, grouped, and committed. The gate names every other changed file as left out |
-| Commit | a file the user limited to some hunks is staged with `git apply --cached` of a patch holding only those hunks, never with `add -A` |
+| Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. The gate names every other changed file as left out |
+| Commit | a file with a patch, listed or built from hunks the user picked, is staged with `git apply --cached <patch>`, never with `add -A` |
 | Remote Settings | skipped |
 
-Every file not listed stays uncommitted in the working tree, through the branch switch and the rebase.
+Every file and hunk not listed stays uncommitted in the working tree, through the branch switch and the rebase.
 
 ## Decisions
 
@@ -58,7 +59,7 @@ A risk is only what the user probably did not intend: a secret, junk, a failing 
 ### 1. Preflight
 
 - `just init` clones every missing member and installs the pre-push hook.
-- Skip, and say why, a repository mid-rebase or mid-merge.
+- Skip, and say why, a repository mid-rebase, mid-merge, or holding a `.git/*.lock` file.
 
 ### 2. Pull
 
@@ -94,7 +95,7 @@ Skip, and say why, a repository that:
 
 An empty remote gets one `Initial commit` of every file, unread except for a scan for secrets and junk.
 Otherwise read the full diff (`git diff HEAD`, and every untracked file), one parallel subagent per large repository.
-Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file only with the user's word, by hunk.
+Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file by hunk only with the user's word or a listed patch.
 
 Gate: the user approves, moves files, edits messages, or drops a repository. The approval covers the branch, the commits, the push, and the pull request: steps 5 to 8 run without another gate. The evidence is one block per commit:
 
@@ -126,7 +127,7 @@ Per repository with an approved grouping:
 Clear the index first (`reset -q`, never `--hard`); earlier staged changes would leak into the first commit.
 Per approved commit, no further gate:
 
-1. Assert the index is empty, then `add -A -- <files>`.
+1. Assert the index is empty and the current branch is the approved one, then `add -A -- <files>`.
 2. Scan `diff --staged` for secrets. On a hit stop and warn.
 3. `commit -F -` with the approved message on stdin.
 
@@ -169,5 +170,4 @@ One table: repository, commits pulled, commits pushed, pull request link and sta
 - Running a state-changing command before its gate was approved
 - `gh api` or `glab api` without an explicit `--method`
 - A question without the evidence to decide it
-- A decision asked through `AskUserQuestion`
-- With `--files-from`, committing a file that is not listed
+- With `--files-from`, committing a file or hunk that is not listed

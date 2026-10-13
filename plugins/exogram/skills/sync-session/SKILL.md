@@ -1,13 +1,13 @@
 ---
 name: sync-session
-description: Sync only the work of the current session, commit the files this session changed and what they need to stand on feature branches and open pull requests, and leave every other local change untouched. Use when the user asks to "sync this session", "sync session", "commit this session", "land what we did", "commit what you just changed", "push only this session's changes", or wants the session's edits landed without the rest of the exogram workspace.
+description: Sync only the work of the current session, commit the hunks this session wrote and what they need to stand on feature branches and open pull requests, and leave every other local change untouched. Use when the user asks to "sync this session", "sync session", "commit this session", "land what we did", "commit what you just changed", "push only this session's changes", or wants the session's edits landed without the rest of the exogram workspace.
 argument-hint: [repository folder ...]
 allowed-tools: Bash, Read, Grep, Glob, Skill
 ---
 
 # Sync Session
 
-Land the work of this session as self-contained commits. This skill builds the list of files the session changed and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`.
+Land the work of this session as self-contained commits. This skill builds the list of what the session wrote, by file and by hunk, and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`.
 
 ## Inputs
 
@@ -17,7 +17,7 @@ Land the work of this session as self-contained commits. This skill builds the l
 
 ### 1. Collect
 
-Session work is every file this session created, edited, renamed, or deleted, through Edit, Write, NotebookEdit, a Bash command, or a subagent. A generated file counts when a session command rewrote it (`just templates`, `just init`).
+Session work is what this session wrote through Edit, Write, NotebookEdit, a Bash command, or a subagent: every file it created, renamed, or deleted, and of a file it edited only its own hunks. A generated file counts when a session command rewrote it (`just templates`, `just init`).
 
 Build the list from the transcript, never from memory.
 
@@ -28,7 +28,7 @@ jq -r "$tool_calls | select(.name == \"Edit\" or .name == \"Write\" or .name == 
 jq -r "$tool_calls | select(.name == \"Bash\") | .input.command" "$transcript"
 ```
 
-The first query prints the files edited by tool. Read every command of the second and add each file it wrote: `sed -i`, a redirect, `mv`, `rm`, a `just` recipe that generates files. Add what a subagent reported as changed.
+The first query prints the files edited by tool; the `old_string` and `new_string` of each Edit name its hunk. Read every command of the second and add each file it wrote: `sed -i`, a redirect, `mv`, `rm`, a `just` recipe that generates files. Add what a subagent reported as changed.
 
 ### 2. Check
 
@@ -39,7 +39,7 @@ Per listed file, with read-only git:
 | outside the exogram workspace root | drop, report as not synced |
 | ignored by git | drop, report |
 | no change in `git status --porcelain -- <file>` | drop: already committed or reverted |
-| `git diff HEAD -- <file>` holds a hunk the session did not write | keep: the file is committed whole |
+| `git diff --no-ext-diff HEAD -- <file>` holds a hunk the session did not write | cut the diff down to the session's hunks, a mixed hunk to the session's lines, save it as a patch that passes `git apply --cached --check`, and list the file with it |
 | refers to an uncommitted file | add that file, with the reason |
 
 The session's edits seed the list; everything they need to stand joins it.
@@ -51,8 +51,8 @@ An empty list: stop and say the session left nothing uncommitted.
 
 Otherwise:
 
-1. Print the list grouped by repository, a note with its alias, and every added or dropped file with its reason.
-2. Write the list to a scratch file by absolute path, one path per line, relative to the exogram workspace root.
+1. Print the list grouped by repository, a note with its alias, a file with a patch marked `hunk only`, and every added or dropped file with its reason.
+2. Write the list to a scratch file by absolute path, one line per file: its path relative to the exogram workspace root, then a tab and the absolute path of its patch when it has one.
 3. Invoke `exogram:sync-workspace` with `--files-from <scratch file> $ARGUMENTS`.
 
 The package gate of `exogram:sync-workspace` is where the user corrects the list.
@@ -61,5 +61,5 @@ The package gate of `exogram:sync-workspace` is where the user corrects the list
 
 - A state-changing git command in this skill
 - A list built from memory, without the transcript
-- A file listed because it is changed, not because the session changed or needs it
+- A file or hunk listed because it is changed, not because the session wrote or needs it
 - A commit that refers to something uncommitted
