@@ -24,14 +24,25 @@ so they track structure changes. Coverage:
 Prose-pattern scans start at the first `## ` heading, after the frontmatter.
 Source footnote lines are exempt because they are citation-exact.
 
-## Tier 2 — STYLE-grammar conformance (subagent)
+## Tier 2 — Formula correctness (subagent)
+
+A subagent reads only the formalism note and judges each formula on its own
+logic: quantifier direction and scope, variable binding, edge cases (empty
+set, base case, index bounds, degenerate parameters), and mutual consistency
+with the other formulas. The formulas outrank the prose: a gloss or remark
+that disagrees with its formula is a prose finding with a suggested prose fix;
+a formula is flagged only for a defect in its own logic or a conflict with
+another formula. Formula findings carry CONFIRMED (demonstrable from the note
+alone) or PLAUSIBLE.
+
+## Tier 3 — STYLE-grammar conformance (subagent)
 
 The style guide note Premise Writing the formalism names defines the grammar of every element. A
 subagent reads that note and checks each body block of the formalism against it, plus the "All"
 constraints and NO USE BEFORE DEFINE. Do not restate the grammar here; read it
 from the note so the check always matches the current rules.
 
-## Tier 3 — Cross-reference and define-before-use (subagent)
+## Tier 4 — Cross-reference and define-before-use (subagent)
 
 Resolve every internal pointer: each parenthetical name that refers to an
 axiom, rule, lemma, or theorem must resolve to its definition site, and each
@@ -39,20 +50,23 @@ operator the note defines must be applied within its declared signature. Needs
 judgement, because parenthetical prose is not always a cross-reference. Tagged
 results hold; do not report them as unproven.
 
-## Tier 4 — Soundness and cross-artifact consistency (subagent + TLC)
+## Tier 5 — Soundness and cross-artifact consistency (subagent + TLC)
 
 Soundness: reason over the note's own axioms, rules, and theorems. Are the
 axioms jointly satisfiable, is each rule well-typed and consistent with the
 invariants it claims to preserve, is each obligation plausibly dischargeable.
 
 Cross-artifact:
-- The other canon notes must agree with the formalism: the state and step
-  summaries restate its predicates and rules, and the vocabulary, the `fctrs:`
+- The other canon notes must agree with the formalism: the step summary
+  restates its rules, the state view only links to the State Machines
+  section, and the vocabulary, the `fctrs:`
   type and property notes in `../../facts/exogram/`, is checked term by term (each class
   against a set, each property against a signature; `subClassOf`,
   `disjointWith` and `characteristic` against ⊎, the axioms and the function
   arrows). A term with no set or function behind it, or of another sort, is an
   error; `exogram:` ids and the exogram's own supers are conventions, skipped.
+  A cardinality OWL 2 RL cannot state, any minimum or exact count, is no
+  divergence.
 - TLA+ spec under `formal/tla/`, model-checked with TLC. A TLC verdict speaks
   to the note's theorems only if the spec faithfully encodes the formalism;
   establish that with the `check-tla` skill first. Map each harness to the
