@@ -13,6 +13,7 @@ This skill is the one place an agent runs state-changing git, and only past a ga
 Every gate covers all repositories at once.
 Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: podman, commit signing, and SSH fail inside it.
 A state-changing command is never piped or filtered; after each one assert the state it should have produced, and stop at the first mismatch.
+A command whose state already holds is skipped, without a remark.
 Scratch files use absolute paths, since `$TMPDIR` differs inside and outside the sandbox.
 
 ## Inputs
@@ -133,7 +134,7 @@ Per approved commit, no further gate:
 
 ### 7. Rebase
 
-Only a branch never pushed: `git fetch origin`, then `git rebase --autostash origin/main`. A pushed branch is never rebased; GitHub rebases at merge. On a conflict stop, report the files, and leave the rebase for the user.
+Only a branch never pushed: `git fetch origin`, then `git rebase --autostash origin/main` when `origin/main` is no ancestor of `HEAD`. A pushed branch is never rebased; GitHub rebases at merge. On a conflict stop, report the files, and leave the rebase for the user.
 
 ### 8. Land
 
