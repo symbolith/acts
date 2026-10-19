@@ -32,7 +32,7 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 | Step | Change |
 | --- | --- |
 | Repositories | only those that hold a listed file |
-| Pull | `just validate` takes the listed files that still exist, not the whole exogram workspace |
+| Pull | no `just serialize`; `just validate` takes the listed files that still exist, not the whole exogram workspace |
 | Survey | `changes` counts the listed files, and a second count gives the other changed files |
 | Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. Each patch first passes `git -C <folder> apply --cached --check <patch>`; one that fails stops the run before the gate. The gate names every other changed file as left out |
 | Commit | a file with a patch, listed or built from hunks the user picked, is staged with `git apply --cached <patch>`, never with `add -A` |
@@ -72,7 +72,7 @@ Per repository, `git fetch --prune origin`, then:
 - on a feature branch with an open pull request: fetch only, stay on it
 - the autostash does not apply cleanly: stop, report the files, leave the stash for the user
 
-After the pull, `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
+After the pull, `just serialize`, then `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
 
 ### 3. Survey
 
