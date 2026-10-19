@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Bash, Grep, Glob, Agent, AskUserQuestion
 
 # Capture a Factors formalism lesson
 
-The lesson is the gap between what you read in `file:./20260518150627.md:1:1`
+The lesson is the gap between what you read in `file:./exogram/20260518150627.md:1:1`
 and what the user just corrected. Operate on THIS conversation; do not fork it.
 Repo CLAUDE.md and the style guide note it names (STYLE) already bind you; read
 STYLE live, do not restate it.
@@ -24,9 +24,13 @@ the fix; a Remark is the rare exception, only when the text is already exact.
 - No, the text was exact but the consequence is genuinely surprising -> a
   **Remark** (STYLE `>` element). First extend an existing nearby Remark; add a
   new one only if none fits. Never restate what the fixed text already implies.
-- It belongs in another canon note (Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names them: the vocabulary, the
-  state and step summaries) or to the daemon (the Premise Writing the formalism daemon rule) -> do not touch the
-  formalism; say where it goes and stop.
+- It belongs in another canon note (listed in Index Canon; Premise Writing the
+  formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names their roles)
+  or to the daemon (the Premise Writing the formalism daemon rule) -> do not
+  touch the formalism; say where it goes and stop. A vocabulary lesson goes to
+  the ontology type and property notes, never to the Ontology Factors body (it
+  is derived from them); the state and step summaries only restate the
+  formalism, so a summary divergence is fixed there, not here.
 
 Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuestion`.
 
@@ -35,13 +39,13 @@ Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuest
 1. State the lesson in one line: what was misread, the correct reading. Not crisp -> ask.
 2. Draft the exact edit, swept over every site it touches, conforming to STYLE's
    All constraints and to NO USE BEFORE DEFINE.
-3. Show the `file:./20260518150627.md:LINE:COL` site and the verbatim change;
+3. Show the `file:./exogram/20260518150627.md:LINE:COL` site and the verbatim change;
    note it edits a ground-of-truth note; get approval. `--dry-run` stops here.
 4. Apply with Edit only (the Premise Writing the formalism Edit rule: never Write/`sed`/`echo`,
-   never the dataview-serializer blocks).
-5. Validate the change: an `Explore` subagent checks it against STYLE (the
-   Premise Writing the formalism style rule); confirm the other canon notes still agree, flag any
-   divergence.
+   never the dataview-serializer blocks). If an Edit fails because the file
+   changed under you, silently re-read and retry.
+5. Set `vetting: unread` in the note's frontmatter and STOP. Do not validate
+   the change yourself; the user validates and sets `vetting: read`.
 
 Report: lesson, classification, site, edit, verdict (`captured` / `dry-run` /
 `out of scope`).
