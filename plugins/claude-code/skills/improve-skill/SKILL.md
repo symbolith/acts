@@ -42,12 +42,13 @@ Find the skill's source and edit it there: `~/repositories/symbolith-exogram/act
 - State each rule as one short sentence; one sentence per line.
 - Place the principle where it acts: amend the step that failed, don't append a "Lessons" section.
 - If an existing rule almost covers it, sharpen that rule instead of adding a new one.
+- If the rule lives in a note or premise the skill reads at runtime, fix it there and keep the skill linking to it; never copy it into the skill.
 - Net line count must not grow beyond a few lines. Pay for additions by cutting: merge overlapping rules, delete anything Claude already knows, drop dead examples.
 - No formalism: no changelogs, no rationale, no "learned on date", no meta-commentary. The skill states rules, not their history.
 
 ### 5. Verify size
 
-After editing, the SKILL.md must still read as a minimal instruction set. If it exceeds ~150 lines, cut until it doesn't, or move detail to `references/`.
+After editing, the SKILL.md must still read as a minimal instruction set, free of duplication. If it does not, cut until it does, or move detail to `references/`.
 
 ### 6. Report
 
