@@ -1,8 +1,8 @@
 ---
 name: write-prose
-description: Write prose through a staged pipeline in which clean-context agents write and the user picks between three proposals at every stage. Use when the user asks to write, draft, compose, rewrite, or polish an email, README, PR description, doc, blog post, essay, pitch, paragraph, reply, wiki note, or any prose a human will read. For commit messages use the dev:commit-message skill instead.
+description: Write prose through a staged pipeline in which clean-context agents write and the user picks between three proposals at every stage. Use when the user asks to write, draft, compose, rewrite, or polish an email, README, PR description, doc, blog post, essay, pitch, paragraph, reply, wiki note, or any prose a human will read. For commit messages use the dev:commit-message skill instead; for one-line glosses of formally defined names use writing:write-gloss.
 argument-hint: <what to write, or the path of a text to rewrite>
-allowed-tools: Agent, AskUserQuestion, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
+allowed-tools: Agent, Read, Write, Edit, Grep, Glob, WebSearch, WebFetch
 ---
 
 # Write prose
@@ -16,17 +16,18 @@ This conversation carries style rules made for terse chat answers, and they spoi
 1. You never write, rephrase or tidy the text or any proposal. Show what the agents return, verbatim.
 2. Every stage offers three proposals from three `writing:prose-writer` agents, spawned in one message, each with a different angle from the stage's axis.
 3. A prompt to an agent holds the stage, the angle, the brief, and the accepted material, all verbatim. It holds no style advice and no instruction on tone. The user's answers go in as the user wrote them.
-4. Show the three proposals side by side, labelled A, B and C, in the order returned, without ranking or comment. Then ask with `AskUserQuestion`: A, B, C, or a combination the user describes.
+4. Show the three proposals side by side, labelled A, B and C, in the order returned, without ranking or comment. Then ask in plain text: A, B, C, or a combination the user describes. Never use `AskUserQuestion`.
 5. If two proposals differ only in wording, discard the set and spawn it again with the angles stated more sharply.
 6. When the user rejects all three, ask why and wait. Carry the reason into every later prompt as a constraint under the heading `Rejected`.
 7. When the user combines proposals, spawn one writer with the parts named and show the result for a yes or no.
 8. Each stage uses fresh writers. Do not resume one from an earlier stage.
 9. From one page up, save each draft and revision to the scratchpad and give the plain paths next to the text.
 10. Skip this skill for a one-line chat reply, a code edit without prose, a direct factual answer, or when the user says "just write it".
+11. The family's shared discipline is [references/discipline.md](references/discipline.md). A one-line gloss of a formally defined name goes to `writing:write-gloss`. A recurring micro-genre without its own skill (a remark, a heading, a paragraph form) runs here only until its skill is created by the claude-code:create-skill research process; when such a genre starts arriving in volume, create that skill first.
 
 ## 0. Size
 
-Ask first, with `AskUserQuestion`, how long the text will be. The answer picks the stages.
+Ask first, in plain text, how long the text will be, offering the three sizes below. The answer picks the stages.
 
 | Size | Stages |
 |---|---|
@@ -76,6 +77,8 @@ Pass any `MISSING:` mark on to the user as a question. A paragraph with nothing 
 ## 4. Draft
 
 Stage `draft`. Axis: the opening move, namely the problem, a concrete case, or the claim.
+
+For a text of more than one page, draft section by section in the order of the outline, with three proposals for each section. Each writer gets the plan of its section and the sections already accepted, verbatim. From the second section on, the axis is how the section opens: on its point, on its carrying case, or on the link from the section before.
 
 Run no checks at this stage and ask for none.
 
