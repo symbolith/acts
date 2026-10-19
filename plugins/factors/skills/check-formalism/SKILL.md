@@ -1,7 +1,7 @@
 ---
 name: check-formalism
 description: Check the Factors formalism note (20260518150627.md) for self-consistency, STYLE conformance, and soundness. Use when the user wants to "check the formalism", "validate the formal note", "lint the formalism", "verify Factors", "check 20260518150627", or after editing the Formalization of Factors note.
-argument-hint: [--mechanical|--style|--refs|--sound|--tlc|--all] (default runs mechanical + style + refs + cross-note)
+argument-hint: [--mechanical|--correct|--style|--refs|--sound|--tlc|--all] (default runs mechanical + correctness + style + refs + cross-note)
 allowed-tools: Read, Bash, Grep, Glob, Agent, AskUserQuestion
 ---
 
@@ -21,7 +21,7 @@ This skill reports; it does not edit. It must NOT modify the formalism note,
 nor any other canon note, on its own. When a check turns up
 something that would need a change in the formalism, report it as a finding
 and stop. Make an edit only after the user approves that specific change. After
-any approved edit, rerun Tier 1 and the Tier 2 STYLE subagent, which the repo
+any approved edit, rerun Tier 1 and the Tier 3 STYLE subagent, which the repo
 CLAUDE.md requires after touching the formalism, and re-check cross-note
 consistency. State explicitly, before editing, that you are about to change a
 ground-of-truth note and wait for confirmation.
@@ -40,20 +40,24 @@ NOT an open result; tagged `[theorem]`/`[lemma]`/`[axiom]` statements hold.
 
 ## Scope
 
-Parse `$ARGUMENTS` for a scope flag. Default runs Tier 1 + 2 + 3 + cross-note.
+Parse `$ARGUMENTS` for a scope flag. Default runs Tier 1 + 2 + 3 + 4 + cross-note.
 `--all` adds soundness and TLC.
 
 | flag | runs |
 | --- | --- |
 | `--mechanical` | Tier 1 only |
-| `--style` | Tier 2 |
-| `--refs` | Tier 3 |
-| `--sound` | Tier 4 soundness subagent |
-| `--tlc` | Tier 4 TLA+ model checking |
+| `--correct` | Tier 2 |
+| `--style` | Tier 3 |
+| `--refs` | Tier 4 |
+| `--sound` | Tier 5 soundness subagent |
+| `--tlc` | Tier 5 TLA+ model checking |
 | `--all` | every tier |
-| (none) | Tier 1 + 2 + 3 + cross-note consistency |
+| (none) | Tier 1 + 2 + 3 + 4 + cross-note consistency |
 
 See `references/checks.md` for what each tier covers.
+
+Every subagent is spawned with `model: opus`, except the Tier 2
+formula-correctness subagent, which inherits the session model (Fable).
 
 ## Tier 1 — Mechanical pass (always)
 
@@ -72,7 +76,7 @@ diff <(grep -oE '\[\^[A-Za-z0-9-]+\]:' "$F" | tr -d '[]^:' | sort -u) \
 
 # note links resolve to existing files
 grep -oE '\]\(([0-9A-HJKMNP-TV-Z]{26}|[0-9]{14}|[0-9a-f-]{36})\.md\)' "$F" | tr -d '])( ' | sort -u \
-  | while read -r f; do [ -f "$f" ] || echo "MISSING LINK: $f"; done
+  | while read -r f; do [ -n "$(find ../.. -name "$f" -not -path '*/.obsidian/*' -print -quit)" ] || echo "MISSING LINK: $f"; done
 
 # em dash anywhere (forbidden), en dash outside a numeric range (page spans ok)
 grep -nP '\x{2014}' "$F"
@@ -91,14 +95,36 @@ root. Treat these scans as evidence and apply judgement on
 edge cases (a hit inside a code span or a legitimate compound term is not a
 violation).
 
-## Tier 2 — STYLE-grammar pass
+## Tier 2 — Formula-correctness pass
+
+Spawn a `general-purpose` subagent that reads only the formalism note. For
+every formula of a definition, axiom, rule, lemma, or theorem it checks:
+
+- quantifier direction and scope: the quantifiers bind what the statement
+  needs, no accidental ∀/∃ swap, no quantifier whose scope cuts a conjunct off
+- variable binding: every variable is bound by a quantifier, declared in the
+  signature, or fixed by an enclosing construct; no capture, no shadowing
+- edge cases: the formula behaves as intended on the empty set, the base case,
+  index bounds, and degenerate instances of its parameters
+- mutual consistency: the formula neither contradicts nor trivializes another
+  formula of the note
+
+The formulas are the ground of truth; the glosses and surrounding prose are
+not. When a gloss or remark disagrees with its formula, report it as a gloss
+finding against the prose, never as a formula finding, and suggest the prose
+fix. Flag a formula itself only when its own logic is wrong or when two
+formulas conflict. Mark each formula finding CONFIRMED when the defect is
+demonstrable from the note alone and PLAUSIBLE otherwise. Return `file:`
+findings or "clean".
+
+## Tier 3 — STYLE-grammar pass
 
 Spawn an `Explore` subagent. Have it read the style guide note Premise Writing the formalism names
 (the grammar lives there, do not restate it) and check every body block of the
 formalism against it, including NO USE BEFORE DEFINE on the formula column. Return
 `file:` findings or "clean".
 
-## Tier 3 — Cross-reference pass
+## Tier 4 — Cross-reference pass
 
 Spawn an `Explore` subagent to resolve every internal pointer: each
 parenthetical `(name)` that names an axiom, rule, lemma, or theorem resolves to
@@ -106,17 +132,18 @@ its definition site, and each operator the note defines is applied within the
 signature it declares. Treat tagged results as established. Return `file:`
 findings or "clean".
 
-## Tier 4 — Cross-note, soundness, and TLC
+## Tier 5 — Cross-note, soundness, and TLC
 
 Cross-note (default): read every canon note and check that the others agree
-with the formalism. The state and step summaries must restate its predicates
-and rules; the vocabulary is checked term by term: every `fctrs:` type note
+with the formalism. The step summary must restate its rules; the state view
+only links to the State Machines section; the vocabulary is checked term by term: every `fctrs:` type note
 against a set of the formalism (`subClassOf` and `disjointWith` against ⊎ and
 the axioms), every `fctrs:` property note against a signature (domain, range,
 `characteristic` against the function arrows and the uniqueness axioms). A
 term with no set or function behind it, or of another sort, is an error;
-`exogram:` ids and the exogram's own supers are conventions, skip them. Any
-divergence is critical.
+`exogram:` ids and the exogram's own supers are conventions, skip them. A
+cardinality OWL 2 RL cannot state, any minimum or exact count, is no
+divergence. Any divergence is critical.
 
 Soundness (`--sound`): spawn a `general-purpose` subagent to reason over the
 note's own axioms, rules, and theorems (read from the note): are the axioms
@@ -137,7 +164,8 @@ One consolidated report grouped by tier, each finding a clickable
 suggested fix. Separate ERRORS from WARNINGS. End with a verdict: `clean` or
 `N errors, M warnings`. Propose fixes in the report; do not apply any to the
 formalism without explicit approval (see the read-only rule above).
-Before reporting, collect the planned Task notes targeting the formalism
-(`grep -l 'hasOutput:' *.md | xargs grep -l '20260518150627' | xargs grep -l 'status: planned'`)
+Before reporting, collect the open Act notes targeting the formalism
+(`for f in $(grep -lE 'state: (potential|intended|ready|claimed|recovering)' *.md); do
+sed -n '/^hasInput:/,/^[^ ]/p; /^hasOutput:/,/^[^ ]/p' "$f" | grep -q 20260518150627 && echo "$f"; done`)
 and drop every finding an existing task already covers; when a finding adds
 detail to such a task, refine that task note instead of reporting it.
