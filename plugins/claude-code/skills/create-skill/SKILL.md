@@ -134,6 +134,8 @@ Structure the body following these principles:
 
 **Conciseness**: Claude is already smart — don't explain basics. Every token competes for context. Target under 500 lines.
 
+**Link, don't copy**: when a rule already lives in a note, premise, or other source of truth, the skill links to it and reads it at runtime; a copy drifts.
+
 **Degrees of freedom**:
 - High freedom (flexible tasks): text guidelines, heuristics
 - Medium freedom (patterns): pseudocode, templates with parameters
@@ -202,6 +204,7 @@ After creating the skill, tell the user where it landed.
 - Deeply nested file references
 - Missing `disable-model-invocation` on side-effect skills (deploy, send, commit)
 - Putting everything in SKILL.md instead of using progressive disclosure
+- Copying rules from notes or premises instead of linking to them
 - Missing `allowed-tools` on skills that only need a few tools — always scope down
 - Adding `context: fork` to skills that need conversation context
 - Omitting `argument-hint` when the skill accepts input
