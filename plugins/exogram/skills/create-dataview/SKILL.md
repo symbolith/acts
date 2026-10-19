@@ -57,7 +57,7 @@ Only Query Type is mandatory. Commands execute in order.
 
 ## Query Types
 
-- **TABLE**: Table with columns - `TABLE field1, field2 FROM ...`
+- **TABLE**: Table with columns, at most three, the first being the alias link - `TABLE field1, field2 FROM ...`
 - **TABLE WITHOUT ID**: Table without file link column
 - **LIST**: Bullet list of pages - `LIST FROM ...`
 - **LIST WITHOUT ID**: List without file prefix
@@ -141,7 +141,7 @@ dv.table(["Name", "Rating"], dv.pages("#books").sort(b => b.file.aliases[0]).map
 - Templates need no exclusion: they live in `facts/.templates`, a dot folder Obsidian never indexes, so Dataview cannot match them.
 - Wrap every optional column in `default(field, "")`. Otherwise missing values print `null`.
 - No unbounded text columns. Prose fields such as `comment` pad every row to the widest cell and wrap in editors. Use link, enum, rating, and date fields only. If prose is unavoidable, `truncate(default(comment, ""), 80)`.
-- Keep rows under 120 characters: at most three columns, the first being the alias link.
+- Keep every serialized row, list lines included, at most 98 characters so the source stays readable; a link column is padded to its full `[alias](path)`, so a table of long aliases needs a LIST.
 - BEFORE writing a column, look up the field in `~/repositories/symbolith-exogram/facts/properties.yaml`. A field with `type: array` NEVER goes into a TABLE bare: it renders as `<ul><li>` HTML. Either `join(field, ", ")`, or, when a cell may hold more than three links, use a LIST instead: `LIST WITHOUT ID link(file.link, file.aliases[0]) + ": " + join(field, ", ")`.
 - A field whose schema type is scalar but that renders as a list is a data error: fix the offending notes (`grep -n '^field:$'`), never the query. If the schema allows both, flatten: `default(choice(typeof(field) = "array", join(field, ", "), field), "")`.
 - Sort by `file.aliases[0]` unless a rating or date is the point of the table.
@@ -154,7 +154,7 @@ Walk this list for every new or edited block. Any miss means the block is wrong,
 2. Every array field joined or the block is a LIST.
 3. Every optional column wrapped in `default`.
 4. No prose column.
-5. After the user regenerates, read the result block: no `<ul>`, no `[object Object]`, no `null`, no row over 120 characters.
+5. After the user regenerates, read the result block: no `<ul>`, no `[object Object]`, no `null`, no row over 98 characters.
 6. Every block sorted: DQL with `SORT`, JS with `.sort(...)`, by `file.aliases[0]` unless a rating or date is the point.
 
 ## Editing an Existing Block
