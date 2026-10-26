@@ -25,7 +25,7 @@ Create one note typed `Type Act` or `Type Factor`, with or without a trait; seve
 
 The note lives in the exogram of its subject: the folder from `in:`, else the folder of the notes the act reads and writes, else the current working directory when it is an exogram. Otherwise ask.
 
-Its notes folder is the exogram workspace root for the Symbolith exogram, the member folder for a notes-only member (`gordian-exogram`, `infai-exogram`), and `<member>/exogram/` for a software member.
+Its notes folder is the exogram workspace root for the Symbolith exogram, the member folder for a member named `*-exogram`, and `<member>/exogram/` for a software member.
 
 Read the `AGENTS.md` in the root of that exogram's repository, when it has one, and the `hasPremise` notes of the acts it imports, and obey them. Where a premise forbids reading notes without permission (factors does), link only by grepping `aliases` lines, never open a note body.
 
