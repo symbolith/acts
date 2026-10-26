@@ -2,7 +2,7 @@
 name: normalize-argument
 description: Reduce a verbose note into normalized Toulmin/AMO argument notes, one Claim note and one Argument note that links the Claim to deduped Evidence/Warrant/Rebuttal element notes and carries the qualifier as a field. Use when the user asks to "reduce a note", "decompose an argument", "split into Toulmin", "normalize an argument", or "turn this note into a Claim".
 argument-hint: <note id or path>
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 ---
 
 # Reduce Argument
@@ -13,8 +13,7 @@ One sentence per line; cut anything not load-bearing.
 
 ## Reading
 
-Running this skill is permission to read non-ground-of-truth notes the reduction needs: the target note, dedup candidates (frontmatter), and the link context of notes that reference or are referenced by the target (inbound links, the paper outline, slot wiring).
-The repo's "do not read other notes" rule does not block these; still read the canon notes named in Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) first, and read nothing beyond what the reduction requires.
+Reading follows rule 1 of Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`): grep candidates by alias, then ask once, naming every note to read; read nothing beyond what the reduction requires.
 
 ## Roles (each must earn its note)
 
@@ -55,10 +54,10 @@ An element carries a conclusion, never enumeration or source tokens like class o
 
 ## Note shapes
 
-Frontmatter comes from the type's template in `~/repositories/symbolith-exogram/facts/.templates/`, read at run time; this skill states none.
+Frontmatter comes from the type's template in `${CLAUDE_PLUGIN_ROOT}/../../../facts/.templates/`, read at run time.
 Element: short alias, one self-contained sentence in `comment` (no reference to its claim, so it stays reusable), empty body.
 Argument: alias `Argument <Claim alias>`, `hasClaim`, the slots, `wasDerivedFrom` as on its Claim, no `comment`, empty body; the Claim carries no slot.
-`wasDerivedFrom` must always contain the formalism note `[Factors Formalism](20260518150627.md)`, on every Claim, Evidence, Warrant, and Rebuttal, no exceptions; when a source note is rewritten in place, add the formalism note to its existing provenance, keeping both.
+`wasDerivedFrom` always contains `[Factors Formalism](20260518150627.md)`; a source rewritten in place keeps its own provenance beside it.
 It may hold more than the formalism note: list every note the content was actually built from, such as the note reduced or a cited `Source`, and never drop one to leave a single source standing.
 A note consulted only to check the result, not to build it, is grounding, not derivation: keep it out of `wasDerivedFrom`.
 Mirror a cited `Source` in `references` as well.
@@ -69,7 +68,7 @@ Mint a `Source` via `/factors:create-source`, never by hand, never as prose. If 
 
 ## Procedure
 
-1. Read the target note.
+1. Ask, then read the target note.
 2. Classify. It may be a single Evidence/Warrant/Rebuttal, not a Claim; if so reduce to that one element. Drop instead of reducing when a load-bearing term is ungrounded or a sharper note already covers it (dedup, step 5).
 3. State and sharpen the claim (Claim test). Split multiple points into multiple Claims. Raise the comment to meet whatever Evidence/Warrant you can ground (altitude match); a sharper claim often pulls in its Qualifier and Rebuttal.
 4. Assign each surviving sentence to a role and write each `comment`. Keep Claim + Evidence + Warrant by default; set `hasQualifier` and add a Rebuttal note only when each earns it.
@@ -81,8 +80,8 @@ Mint a `Source` via `/factors:create-source`, never by hand, never as prose. If 
    - broader or narrower: `broader` on the specific note, `narrower` on the general one.
    - grounds: an element goes into the slot of the Argument of the claim it supports, existing or new.
    - adjacent: link it in `relation`.
-6. Confirm the claim wording with the user first, then the plumbing (AskUserQuestion). Show the source beside the proposed set, each sentence marked kept/cut/re-grounded, the candidates with their relations, plus the claim's consequence and falsifier. Prefer folding over defending a weak claim; recommend dropping if too thin, ungrounded, or duplicative.
-7. The exogram workspace root is `~/repositories/symbolith-exogram`; run every `just` recipe from there. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
+6. Confirm the claim wording with the user first, then the plumbing, as chat text that ends the turn; the user confirms free-form. Show the source beside the proposed set, each sentence marked kept/cut/re-grounded, the candidates with their relations, plus the claim's consequence and falsifier. Prefer folding over defending a weak claim; recommend dropping if too thin, ungrounded, or duplicative.
+7. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; run every `just` recipe from there. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
 8. Report: ids written, reused vs created.
 9. Propose the next candidate. Name the single most likely note to reduce next, preferring an un-reduced `Idea` or other verbose note surfaced during dedup (step 5) whose `comment` bundles several claims, especially one an element just written links to or sits adjacent to. Give a one-line reason for the pick, or state that none surfaced; never reduce it without a fresh go-ahead.
 
