@@ -40,15 +40,6 @@ const tree = (nodes, depth, path) => nodes
 dv.paragraph(tree(roots, 0, []).join("\n"));
  -->
 <!-- dataview-serializer-js-result -->
-- [Applying to an open call](01M5A2MQMK5YZMVE9ZMYNSBGM6.md)
-    - [Capturing an open call](01M5A2MQMMVKFHGYSKFGFHDY6Y.md): [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md)
-    - [Finding open calls](01M5A2MQMK5YZMVE9ZMYNSBGM7.md)
-    - [Writing an open call application](01M5A2MQMMVKFHGYSKFGFHDY6Z.md)
-- [Tending an exogram](01M3MCPACCK5HE44XPK8ZEJMHJ.md): [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md)
-    - [Adding missing reverse properties](01M412AVZKEKCM82187EZ7Z6HC.md): [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md)
-    - [Tending the facts](01M3MDS7C6G7YJX13WVMTGF6P7.md): [Premise Tending the facts](01M3MDCVSEEVSJYGKCB70ZM5YG.md)
-- [Updating Workspace Symbolith](01M3WTTSCGAYT49SCF8W8SKNGA.md)
-
 <!-- dataview-serializer-js-result-end -->
 
 ## Proposed
