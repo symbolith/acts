@@ -11,7 +11,7 @@ Sync the exogram workspace: pull what the remotes have, then land what the host 
 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
 Every gate covers all repositories at once.
-Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: podman, commit signing, and SSH fail inside it.
+Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: commit signing and SSH fail inside it.
 A state-changing command is never piped or filtered; after each one assert the state it should have produced, and stop at the first mismatch.
 A command whose state already holds is skipped, without a remark.
 Scratch files use absolute paths, since `$TMPDIR` differs inside and outside the sandbox.
