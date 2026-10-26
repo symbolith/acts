@@ -31,9 +31,9 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 
 | Step | Change |
 | --- | --- |
-| Repositories | only those that hold a listed file |
+| Repositories | only those that hold a listed file: `just pull` and `just survey` take `--files-from <file>` |
 | Pull | no `just serialize`; `just validate` takes the listed files that still exist, not the whole exogram workspace |
-| Survey | `changes` counts the listed files, and a second count gives the other changed files |
+| Survey | `changes` counts the listed files, `(+n other)` the rest |
 | Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. Each patch first passes `git -C <folder> apply --cached --check <patch>`; one that fails stops the run before the gate. The gate names every other changed file as left out |
 | Commit | a file with a patch, listed or built from hunks the user picked, is staged with `git apply --cached <patch>`, never with `add -A` |
 | Remote Settings | skipped |
@@ -43,7 +43,7 @@ Every file and hunk not listed stays uncommitted in the working tree, through th
 ## Decisions
 
 The user has not seen the diff. Every decision is one markdown chat message that ends the turn; the user answers free-form.
-Never `AskUserQuestion`: chat text before a tool call is swallowed, and its `preview` wraps at 64 columns.
+No command runs while any question of a decision is open; a partial answer gets a follow-up on the open part only.
 
 The message holds, in this order:
 
@@ -57,48 +57,28 @@ A risk is only what the user probably did not intend: a secret, junk, a failing 
 
 ## Workflow
 
-### 1. Preflight
+### 1. Pull
 
-- `just init` clones every missing member and installs the pre-push hook.
-- Skip, and say why, a repository mid-rebase, mid-merge, or holding a `.git/*.lock` file.
-
-### 2. Pull
-
-Per repository, `git fetch --prune origin`, then:
-
-- on `main` and behind `origin/main`: `git pull --ff-only --autostash`
-- local `main` diverged from `origin/main`: skip, never merge or reset
-- on a feature branch whose pull request is merged (`gh pr view <branch> --json state`, or `glab mr view <branch>`): `git fetch origin main:main`, `git switch main`, `git branch -D <branch>`. The fetch comes first: a stale `main` makes the switch refuse a file with local changes. `-D` because a rebase merge gives the commits new ids.
-- on a feature branch with an open pull request: fetch only, stay on it
-- the autostash does not apply cleanly: stop, report the files, leave the stash for the user
+`just pull [folder ...]` checks the SSH agent and the forge logins before any network command, runs `just init`, and removes every empty, read-only `.git/*.lock` the sandbox left behind while no git process runs.
+It then fetches every repository in parallel, fast-forwards `main` with `--autostash`, and moves a branch whose pull request is merged back to `main`.
+On missing credentials relay the printed `!` command and stop.
+A row marked `stopped` ends the run, the autostash left for the user; a row marked `skipped` stays out of the run, a diverged `main` never merged or reset.
 
 After the pull, `just serialize`, then `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
 
-### 3. Survey
+### 2. Survey
 
-One table, one row per repository with local changes, unmerged commits, or pulled commits:
+`just survey [folder ...]` prints one row per repository with local changes, unmerged commits, or a feature branch; skip the repositories its `skip` column names.
+Below the table, `Generated` lists the files changed only inside dataview result blocks, `Edited` every other change.
 
-| Column | Source |
-| --- | --- |
-| branch | `git -C <folder> branch --show-current` |
-| changes | `git -C <folder> status --porcelain` count |
-| pulled | commits the pull brought in |
-| ahead / behind | `git -C <folder> rev-list --left-right --count origin/main...HEAD` |
-| remote | `empty` when `git ls-remote --heads origin main` prints nothing |
-| open pull request | `gh pr list --head <branch>`, or `glab mr list --source-branch <branch>` for a GitLab remote |
-
-Skip, and say why, a repository that:
-
-- is on a branch without a pull request, a branch this skill did not open
-- has local `main` ahead of `origin/main` on a non-empty remote
-
-### 4. Package
+### 3. Package
 
 An empty remote gets one `Initial commit` of every file, unread except for a scan for secrets and junk.
-Otherwise read the full diff (`git diff HEAD`, and every untracked file), one parallel subagent per large repository.
+`Generated` files form one `chore: refresh serialized dataview results` commit per repository, unread.
+Otherwise read the full diff of every `Edited` file (`git diff HEAD`, untracked files whole), one parallel Sonnet subagent per large repository.
 Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file by hunk only with the user's word or a listed patch.
 
-Gate: the user approves, moves files, edits messages, or drops a repository. The approval covers the branch, the commits, the push, and the pull request: steps 5 to 8 run without another gate. The evidence is one block per commit:
+Gate: the user approves, moves files, edits messages, or drops a repository. The approval covers the branch, the commits, the push, and the pull request: steps 4 to 7 run without another gate. The evidence is one block per commit:
 
 ```markdown
 ### <repository> → <branch>
@@ -115,7 +95,7 @@ Left out: <count> files (<kinds>)
 
 `Pull request` and `Left out` appear once per repository, `Left out` only with `--files-from`. Risks follow the last block.
 
-### 5. Branch
+### 4. Branch
 
 Per repository with an approved grouping:
 
@@ -123,7 +103,7 @@ Per repository with an approved grouping:
 - On `main`: `git switch -c <type>/<slug> origin/main`, where type and slug name the main intent of the repository's commits. Uncommitted changes carry over.
 - On a feature branch with an open pull request: stay; the new commits join that pull request. Never branch from it: GitHub's rebase merge gives the merged commits new ids, so a branch built on them would need a force push.
 
-### 6. Commit
+### 5. Commit
 
 Clear the index first (`reset -q`, never `--hard`); earlier staged changes would leak into the first commit.
 Per approved commit, no further gate:
@@ -132,11 +112,11 @@ Per approved commit, no further gate:
 2. Scan `diff --staged` for secrets. On a hit stop and warn.
 3. `commit -F -` with the approved message on stdin.
 
-### 7. Rebase
+### 6. Rebase
 
 Only a branch never pushed: `git fetch origin`, then `git rebase --autostash origin/main` when `origin/main` is no ancestor of `HEAD`. A pushed branch is never rebased; GitHub rebases at merge. On a conflict stop, report the files, and leave the rebase for the user.
 
-### 8. Land
+### 7. Land
 
 No gate: the package gate approved the push and the pull request. Per repository:
 
@@ -148,7 +128,7 @@ No gate: the package gate approved the push and the pull request. Per repository
 
 Stop there. The user merges elsewhere; the repository stays on the branch. GitHub rebases at merge; GitLab needs the Rebase button or `glab mr rebase` when `main` moved.
 
-### 9. Remote Settings
+### 8. Remote Settings
 
 Once per repository, read the settings and offer every fix behind one gate:
 
@@ -156,7 +136,7 @@ Once per repository, read the settings and offer every fix behind one gate:
 - GitHub, public repository only: a ruleset on the default branch with the rules `deletion`, `non_fast_forward`, `required_linear_history`, and `pull_request` with `allowed_merge_methods: ["rebase"]` and one approval, the Admin role (`actor_id` 5) on the bypass list, since an author cannot approve their own pull request. Read with `gh api --method GET repos/<owner>/<name>/rulesets`, create with `gh api --method POST repos/<owner>/<name>/rulesets --input -`. Private repositories on GitHub Free have no rulesets; the pre-push hook stands in.
 - GitLab, `glab api --method GET projects/<url-encoded path>`: `merge_method` is `ff`; `main` is protected with push access `No one` (level 0). Changing it needs the Maintainer role; report when the user lacks it.
 
-### 10. Report
+### 9. Report
 
 One table: repository, commits pulled, commits pushed, pull request link and state, skipped with reason.
 
@@ -168,7 +148,6 @@ One table: repository, commits pulled, commits pushed, pull request link and sta
 - A branch created from another feature branch
 - Switching, rebasing, or deleting a branch the user was working on
 - A commit mixing intents, or a message not drafted by `dev:commit-message`
-- Running a state-changing command before its gate was approved
 - `gh api` or `glab api` without an explicit `--method`
 - A question without the evidence to decide it
 - With `--files-from`, committing a file or hunk that is not listed
