@@ -32,7 +32,7 @@ With `--files-from` the run covers only the listed files. `exogram:sync-session`
 | Step | Change |
 | --- | --- |
 | Repositories | only those that hold a listed file: `just pull` and `just survey` take `--files-from <file>` |
-| Pull | no `just serialize`; `just validate` takes the listed files that still exist, not the whole exogram workspace |
+| Pull | `just validate` takes the listed files that still exist, not the whole exogram workspace |
 | Survey | `changes` counts the listed files, `(+n other)` the rest |
 | Package | only listed files are read, grouped, and committed, a file with a patch as that patch, shown as `hunk only` with no question. Each patch first passes `git -C <folder> apply --cached --check <patch>`; one that fails stops the run before the gate. The gate names every other changed file as left out |
 | Commit | a file with a patch, listed or built from hunks the user picked, is staged with `git apply --cached <patch>`, never with `add -A` |
@@ -60,11 +60,12 @@ A risk is only what the user probably did not intend: a secret, junk, a failing 
 ### 1. Pull
 
 `just pull [folder ...]` checks the SSH agent and the forge logins before any network command, runs `just init`, and removes every empty, read-only `.git/*.lock` the sandbox left behind while no git process runs.
-It then fetches every repository in parallel, fast-forwards `main` with `--autostash`, and moves a branch whose pull request is merged back to `main`.
+It then, per repository in parallel, empties every dataview result block in its notes, fetches, fast-forwards `main` with `--autostash`, and moves a branch whose pull request is merged back to `main`.
+Git only ever holds empty result blocks, so generated output never conflicts.
 On missing credentials relay the printed `!` command and stop.
 A row marked `stopped` ends the run, the autostash left for the user; a row marked `skipped` stays out of the run, a diverged `main` never merged or reset.
 
-After the pull, `just serialize`, then `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
+After the pull, `just validate`. On any failure stop and report; a stale generated file means `just init` or `just templates` first.
 
 ### 2. Survey
 
@@ -74,7 +75,7 @@ Below the table, `Generated` lists the files changed only inside dataview result
 ### 3. Package
 
 An empty remote gets one `Initial commit` of every file, unread except for a scan for secrets and junk.
-`Generated` files form one `chore: refresh serialized dataview results` commit per repository, unread.
+`Generated` files, whose filled result blocks the pull emptied, form one `chore: clear serialized dataview results` commit per repository, unread.
 Otherwise read the full diff of every `Edited` file (`git diff HEAD`, untracked files whole), one parallel Sonnet subagent per large repository.
 Group the changes into commits with one intent each, as `dev:commit-message` step 3 defines. A file belongs to exactly one commit; split a file by hunk only with the user's word or a listed patch.
 
@@ -128,7 +129,12 @@ No gate: the package gate approved the push and the pull request. Per repository
 
 Stop there. The user merges elsewhere; the repository stays on the branch. GitHub rebases at merge; GitLab needs the Rebase button or `glab mr rebase` when `main` moved.
 
-### 8. Remote Settings
+### 8. Serialize
+
+`just serialize` fills the result blocks again for Obsidian and the note listings.
+The output stays uncommitted; the next pull empties it. A failure goes into the report.
+
+### 9. Remote Settings
 
 Once per repository, read the settings and offer every fix behind one gate:
 
@@ -136,13 +142,14 @@ Once per repository, read the settings and offer every fix behind one gate:
 - GitHub, public repository only: a ruleset on the default branch with the rules `deletion`, `non_fast_forward`, `required_linear_history`, and `pull_request` with `allowed_merge_methods: ["rebase"]` and one approval, the Admin role (`actor_id` 5) on the bypass list, since an author cannot approve their own pull request. Read with `gh api --method GET repos/<owner>/<name>/rulesets`, create with `gh api --method POST repos/<owner>/<name>/rulesets --input -`. Private repositories on GitHub Free have no rulesets; the pre-push hook stands in.
 - GitLab, `glab api --method GET projects/<url-encoded path>`: `merge_method` is `ff`; `main` is protected with push access `No one` (level 0). Changing it needs the Maintainer role; report when the user lacks it.
 
-### 9. Report
+### 10. Report
 
 One table: repository, commits pulled, commits pushed, pull request link and state, skipped with reason.
 
 ## Anti-patterns
 
 - Committing on `main` of a remote that already has one
+- Committing a filled dataview result block
 - Merging a pull request, or switching to `main` while its pull request is open
 - `--no-verify`, `--force`, `--force-with-lease`, `reset --hard`, `rebase -i`, `stash drop`, `clean`
 - A branch created from another feature branch
