@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 
 # Sync Session
 
-Land the work of this session as self-contained commits. This skill builds the list of what the session wrote, by file and by hunk, and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`.
+Land the work of this session as self-contained commits. This skill builds the list of what the session wrote, by file and by hunk, and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`.
 
 ## Inputs
 
@@ -22,7 +22,7 @@ Session work is what this session wrote through Edit, Write, NotebookEdit, a Bas
 Build the list from the transcript, never from memory.
 
 ```bash
-transcript=$(ls ~/.config/claude/projects/*/${CLAUDE_SESSION_ID}.jsonl)
+transcript=$(ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/projects/*/${CLAUDE_SESSION_ID}.jsonl)
 tool_calls='select(.type == "assistant") | .message.content[]? | select(.type == "tool_use")'
 jq -r "$tool_calls | select(.name == \"Edit\" or .name == \"Write\" or .name == \"NotebookEdit\") | .input.file_path // .input.notebook_path" "$transcript" | sort -u
 jq -r "$tool_calls | select(.name == \"Bash\") | .input.command" "$transcript"
@@ -39,7 +39,7 @@ Per listed file, with read-only git:
 | outside the exogram workspace root | drop, report as not synced |
 | ignored by git | drop, report |
 | no change in `git status --porcelain -- <file>` | drop: already committed or reverted |
-| `git diff --no-ext-diff HEAD -- <file>` holds a hunk the session did not write | run `python3 ~/repositories/symbolith-exogram/acts/plugins/exogram/skills/sync-session/scripts/session-patch.py <transcript> <file> > <scratch patch>` and list the file with the patch; if it fails, a session edit stands on a foreign hunk: list the file whole, with the reason |
+| `git diff --no-ext-diff HEAD -- <file>` holds a hunk the session did not write | run `python3 ${CLAUDE_SKILL_DIR}/scripts/session-patch.py <transcript> <file> > <scratch patch>` and list the file with the patch; if it fails, a session edit stands on a foreign hunk: list the file whole, with the reason |
 | refers to an uncommitted file | add that file, with the reason |
 
 The session's edits seed the list; everything they need to stand joins it.

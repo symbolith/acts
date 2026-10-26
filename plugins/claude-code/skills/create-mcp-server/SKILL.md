@@ -102,7 +102,7 @@ This launches the MCP Inspector for interactive testing. Tell the user to run th
 
 If the server was added to Claude Code, the user may want to allow specific MCP tools in their settings. MCP tool permissions follow the pattern `mcp__<server-name>__<tool-name>`.
 
-Check `file:~/.config/claude/settings.json` for existing MCP permissions as reference.
+Check the global settings, `settings.json` in `$CLAUDE_CONFIG_DIR` or, when it is unset, in `~/.claude`, for existing MCP permissions as reference.
 
 ### 7. Summary
 

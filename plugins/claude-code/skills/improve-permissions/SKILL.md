@@ -14,11 +14,11 @@ Consolidate every `settings.local.json` into shared settings, then delete it; no
 Run the collection script:
 
 ```bash
-bash ~/repositories/symbolith-exogram/acts/plugins/claude-code/skills/improve-permissions/scripts/collect-permissions.sh
+bash ${CLAUDE_SKILL_DIR}/scripts/collect-permissions.sh
 ```
 
 This outputs tab-separated lines: `permission\tsource_projects`
-Only permissions NOT already in global allow or deny or in `~/repositories/symbolith-exogram/exogram/settings.json` are shown.
+Only permissions NOT already in global allow or deny or in `${CLAUDE_PLUGIN_ROOT}/../../../exogram/settings.json` are shown.
 
 ### 2. Normalize
 
@@ -30,7 +30,7 @@ Before categorizing, normalize project-specific permissions into general forms:
 
 ### 3. Categorize
 
-Apply rules from `~/repositories/symbolith-exogram/acts/plugins/claude-code/skills/improve-permissions/references/categorization-rules.md`:
+Apply rules from `${CLAUDE_SKILL_DIR}/references/categorization-rules.md`:
 - **Safe**: read-only, no state changes
 - **Maybe safe**: side effects, but controlled/reversible
 - **Not safe**: destructive, never auto-add
@@ -53,10 +53,10 @@ Group related permissions (e.g. all cargo commands together) into multi-select q
 
 ### 7. Update the targets
 
-- The exogram workspace root is `~/repositories/symbolith-exogram`. The exogram workspace settings are `~/repositories/symbolith-exogram/exogram/settings.json`.
+- The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`. The exogram workspace settings are `${CLAUDE_PLUGIN_ROOT}/../../../exogram/settings.json`.
 - The target follows the source, never the command. Global settings belong to dotfiles.
 - A permission from a `settings.local.json` inside the exogram workspace root goes to the exogram workspace settings; then run `just init`, which writes it into every `.claude/settings.json` there.
-- A permission from outside goes to `~/.config/claude/settings.json`; one from both sides goes to both.
+- A permission from outside goes to the global settings, `settings.json` in `$CLAUDE_CONFIG_DIR` or, when it is unset, in `~/.claude`; one from both sides goes to both.
 - Add to `.permissions.allow`, keep it sorted, preserve all other fields.
 
 ### 8. Flag deny conflicts

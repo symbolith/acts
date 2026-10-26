@@ -19,7 +19,7 @@ Resolve a citation for an external work to an exogram `Source` note: reuse an ex
 
 ## Source note shape (frontmatter is RDF)
 
-The field set is owned by the template `~/repositories/symbolith-exogram/facts/.templates/Source.md` and the conditional `~/repositories/symbolith-exogram/facts/types/Source.yaml`, both generated from the type note by `just templates`; read them at run time for the required and optional fields rather than trusting this skill. Fill every field the verified record provides, not just the required ones. `aliases[0]` is a short title handle; all bibliographic metadata lives in frontmatter, so the body is normally empty.
+The field set is owned by the template `${CLAUDE_PLUGIN_ROOT}/../../../facts/.templates/Source.md` and the conditional `${CLAUDE_PLUGIN_ROOT}/../../../facts/types/Source.yaml`, both generated from the type note by `just templates`; read them at run time for the required and optional fields rather than trusting this skill. Fill every field the verified record provides, not just the required ones. `aliases[0]` is a short title handle; all bibliographic metadata lives in frontmatter, so the body is normally empty.
 
 Conventions the template does not spell out:
 
@@ -42,5 +42,5 @@ Conventions the template does not spell out:
    ```
    A DOI or title term can appear in non-`Source` notes (the ground-of-truth notes, skill files); read only candidate frontmatter (`aliases`, `type`, `doi`) and keep matches whose `type` is `Source`.
 4. If a match exists, return its `[alias](id.md)` link and stop.
-5. Otherwise mint an id with `just ulid` from the exogram workspace root, `~/repositories/symbolith-exogram`, and write the `Source` note using only verified fields.
+5. Otherwise mint an id with `just ulid` from the exogram workspace root, `${CLAUDE_PLUGIN_ROOT}/../../..`, and write the `Source` note using only verified fields.
 6. Report: the link to use, whether it was reused or created, and the source URL each field was verified against.

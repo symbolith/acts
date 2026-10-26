@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templ
 
 # Create Note Type
 
-The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`. Add a note type to its `facts/exogram/` folder. All relative paths below are relative to its `facts/` folder, except those that start with `facts/` or `factors/`, which are relative to the exogram workspace root. A type is complete when its type note exists and `just templates` has written the rest from it: the enum entry and `allOf` reference in `exogram.yaml`, the type file, the template, and the type note's `template` link. A type note exists exactly once and only in `facts/exogram/`. A type note found in another exogram is moved here, or merged into its duplicate and deleted.
+The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`. Add a note type to its `facts/exogram/` folder. All relative paths below are relative to its `facts/` folder, except those that start with `facts/` or `factors/`, which are relative to the exogram workspace root. A type is complete when its type note exists and `just templates` has written the rest from it: the enum entry and `allOf` reference in `exogram.yaml`, the type file, the template, and the type note's `template` link. A type note exists exactly once and only in `facts/exogram/`. A type note found in another exogram is moved here, or merged into its duplicate and deleted.
 
 ## Inputs
 

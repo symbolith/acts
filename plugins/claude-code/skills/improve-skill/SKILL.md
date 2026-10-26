@@ -37,7 +37,7 @@ The user naming the failure is the trigger, never the confirmation; this step ha
 
 ### 4. Fold it in
 
-Find the skill's source and edit it there: `~/repositories/symbolith-exogram/acts/plugins/<plugin>/skills/<name>/SKILL.md`.
+Find the skill's source and edit it there: `${CLAUDE_PLUGIN_ROOT}/../<plugin>/skills/<name>/SKILL.md`.
 
 - State each rule as one short sentence; one sentence per line.
 - Place the principle where it acts: amend the step that failed, don't append a "Lessons" section.

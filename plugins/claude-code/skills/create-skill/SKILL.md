@@ -24,7 +24,7 @@ If unclear, use `AskUserQuestion` to clarify:
 - Does it need supporting files (scripts, references)?
 
 Always ask where the skill goes, with `AskUserQuestion`, unless `$ARGUMENTS` says so:
-Every skill lives in `~/repositories/symbolith-exogram/acts/plugins/<plugin>/skills/<skill-name>/`, a plugin of the `acts` marketplace. Ask which plugin:
+Every skill lives in `${CLAUDE_PLUGIN_ROOT}/../<plugin>/skills/<skill-name>/`, a plugin of the `acts` marketplace. Ask which plugin:
 - Global: a plugin enabled in the user settings (`claude-code`, `dev`, `diagrams`, `exogram`, `writing`). For skills that apply to any project.
 - Project: a plugin enabled only in one project's `.claude/settings.json` (`factors`). For skills bound to one repository's files, rules, or vocabulary.
 
@@ -39,7 +39,7 @@ Before writing anything, research what already exists and what the domain demand
 Read 3-5 existing skills most relevant to the new skill's domain:
 
 ```
-Glob: ~/repositories/symbolith-exogram/acts/plugins/*/skills/*/SKILL.md
+Glob: */skills/*/SKILL.md in ${CLAUDE_PLUGIN_ROOT}/..
 ```
 
 Look for:
@@ -173,7 +173,7 @@ Create all files under the location chosen in step 1:
 <location>/<skill-name>/references/   (if needed)
 ```
 
-`<location>` is `~/repositories/symbolith-exogram/acts/plugins/<plugin>/skills`.
+`<location>` is `${CLAUDE_PLUGIN_ROOT}/../<plugin>/skills`.
 
 ### 7. Validate
 
@@ -192,7 +192,7 @@ Before finishing, verify:
 
 After creating the skill, tell the user where it landed.
 
-> Skill created at `~/repositories/symbolith-exogram/acts/plugins/<plugin>/skills/<name>/SKILL.md`.
+> Skill created at `<location>/<name>/SKILL.md`.
 > The marketplace `acts` loads in place: the skill is available as `/<plugin>:<name>` after `/reload-plugins` or in the next session. A new plugin also needs an entry in `acts/.claude-plugin/marketplace.json` and in `enabledPlugins`.
 
 ## Anti-patterns to Avoid
