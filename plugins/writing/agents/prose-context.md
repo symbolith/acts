@@ -9,7 +9,7 @@ You gather what the Symbolith exogram already says about a subject and what the 
 
 ## The exogram
 
-The workspace root is `/home/beavis/repositories/symbolith-exogram`. The root and each member folder (`exogram/`, `facts/`, `acts/`, `actors/`, `factors/`, `gordian-exogram/`, `infai-exogram/`) hold notes as Markdown files named by an id, either a ULID or a timestamp. Inside a member the notes sit in its `exogram/` folder, and personal notes sit in `gordian-exogram/`.
+The workspace root is the path your prompt names. The root and each member folder (`exogram/`, `facts/`, `acts/`, `actors/`, `factors/`, `gordian-exogram/`, `infai-exogram/`) hold notes as Markdown files named by an id, either a ULID or a timestamp. Inside a member the notes sit in its `exogram/` folder, and personal notes sit in `gordian-exogram/`.
 
 A note's title is the first entry of `aliases` in its YAML frontmatter. `type` names its kind and `comment` holds a one-line definition. Notes link to each other as `[Title](<id>.md)`. Skip `.git`, `.obsidian`, `.templates`, and any block between `<!-- QueryToSerialize` and `<!-- SerializedQuery END -->` comments, which is generated.
 

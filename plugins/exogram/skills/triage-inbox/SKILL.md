@@ -6,7 +6,7 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, Tool
 
 # Clean Inbox
 
-Process the GTD inbox, the note typed `Type Inbox`, by triaging unprocessed items into proper exogram notes, tasks, or trash. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every relative path below is relative to it.
+Process the GTD inbox, the note typed `Type Inbox`, by triaging unprocessed items into proper exogram notes, tasks, or trash. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; every relative path below is relative to it.
 
 Every proposal shown to the user is a finished, researched change, so the user only answers yes or no.
 

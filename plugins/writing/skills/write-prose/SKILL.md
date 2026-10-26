@@ -37,7 +37,7 @@ Ask first, in plain text, how long the text will be, offering the three sizes be
 
 The user may add or drop a stage at any checkpoint.
 
-In the same message as the size question, spawn one `writing:prose-context` with the subject from `$ARGUMENTS`. It searches the Symbolith exogram for what the notes already say, then the web for what they lack and for the case against them. Its report joins the brief verbatim as `Context` and goes to every writer.
+In the same message as the size question, spawn one `writing:prose-context` with the subject from `$ARGUMENTS` and the workspace root `${CLAUDE_PLUGIN_ROOT}/../../..`. It searches the Symbolith exogram for what the notes already say, then the web for what they lack and for the case against them. Its report joins the brief verbatim as `Context` and goes to every writer.
 
 ## 1. Brief
 

@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 
 # Sync Workspace
 
-Sync the exogram workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a feature branch, one pull request per branch, rebase merge onto `main`. `main` never takes a direct commit. The skill opens pull requests and never merges them: the user merges elsewhere. Between runs a repository stays on its feature branch, and new changes join its open pull request. No branch is ever force-pushed. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is relative to it.
+Sync the exogram workspace: pull what the remotes have, then land what the host has. Every repository follows one strategy: commits on a feature branch, one pull request per branch, rebase merge onto `main`. `main` never takes a direct commit. The skill opens pull requests and never merges them: the user merges elsewhere. Between runs a repository stays on its feature branch, and new changes join its open pull request. No branch is ever force-pushed. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; every path below is relative to it.
 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
 Every gate covers all repositories at once.

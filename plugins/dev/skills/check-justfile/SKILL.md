@@ -45,4 +45,4 @@ excessive-nesting-threshold = 4
 5. Verify with `just lint` (report failures, do not silence them) and `just test`.
 6. Never run state-changing git commands; the user commits.
 
-Reference layout: `~/repositories/symbolith-exogram/rdf-diagram-framework/justfile` (workspace delegation) and `~/repositories/symbolith-exogram/rdf-diagram-framework/rdf-diagram-lib/justfile` (member crate).
+Reference layout: `${CLAUDE_PLUGIN_ROOT}/../../../rdf-diagram-framework/justfile` (workspace delegation) and `${CLAUDE_PLUGIN_ROOT}/../../../rdf-diagram-framework/rdf-diagram-lib/justfile` (member crate).

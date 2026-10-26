@@ -7,7 +7,7 @@ allowed-tools: Read, Grep, Glob, Edit, Bash(just:*)
 
 # Do Enactable
 
-`$ARGUMENTS` names one Act or Factor note, by id or alias. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; a note id is unique across it, so `**/<id>.md` finds the file.
+`$ARGUMENTS` names one Act or Factor note, by id or alias. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; a note id is unique across it, so `**/<id>.md` finds the file.
 
 ## Prepare
 

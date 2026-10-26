@@ -142,7 +142,7 @@ dv.table(["Name", "Rating"], dv.pages("#books").sort(b => b.file.aliases[0]).map
 - Wrap every optional column in `default(field, "")`. Otherwise missing values print `null`.
 - No unbounded text columns. Prose fields such as `comment` pad every row to the widest cell and wrap in editors. Use link, enum, rating, and date fields only. If prose is unavoidable, `truncate(default(comment, ""), 80)`.
 - Keep every serialized row, list lines included, at most 98 characters so the source stays readable; a link column is padded to its full `[alias](path)`, so a table of long aliases needs a LIST.
-- BEFORE writing a column, look up the field in `~/repositories/symbolith-exogram/facts/properties.yaml`. A field with `type: array` NEVER goes into a TABLE bare: it renders as `<ul><li>` HTML. Either `join(field, ", ")`, or, when a cell may hold more than three links, use a LIST instead: `LIST WITHOUT ID link(file.link, file.aliases[0]) + ": " + join(field, ", ")`.
+- BEFORE writing a column, look up the field in `${CLAUDE_PLUGIN_ROOT}/../../../facts/properties.yaml`. A field with `type: array` NEVER goes into a TABLE bare: it renders as `<ul><li>` HTML. Either `join(field, ", ")`, or, when a cell may hold more than three links, use a LIST instead: `LIST WITHOUT ID link(file.link, file.aliases[0]) + ": " + join(field, ", ")`.
 - A field whose schema type is scalar but that renders as a list is a data error: fix the offending notes (`grep -n '^field:$'`), never the query. If the schema allows both, flatten: `default(choice(typeof(field) = "array", join(field, ", "), field), "")`.
 - Sort by `file.aliases[0]` unless a rating or date is the point of the table.
 
