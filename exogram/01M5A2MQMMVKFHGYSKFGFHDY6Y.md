@@ -16,5 +16,6 @@ vetting: unread
 Read the call page and every page it links for the application.
 Write an Open Call note, an Event note for what happens, and an Organization note for the issuer unless one exists.
 Take dates, fees and requirements as the page states them and leave out what it does not state.
-Write the body as bullet points and link every page, form, address and note where the text names it.
+Write the body in German, as bullet points of a few words each, and link every page, form, address and note where the text names it.
+Keep only what decides whether and how to apply: what the call gives, what it costs, who may apply, what to send and by when.
 Map each discipline the call names to an Art Form, and add an Art Form when none fits.

@@ -8,5 +8,6 @@ vetting: unread
 ---
 
 Search open call listings and the accounts of art institutions for calls whose deadline is ahead.
-Keep a call only when its art forms and eligibility fit the applicant.
+Build every search from the art forms the applicant names in `artForm`, never from its name.
+Keep a call only when its art forms are among the applicant's `artForm` and its eligibility fits the applicant.
 Skip a call that already has an Open Call note.
