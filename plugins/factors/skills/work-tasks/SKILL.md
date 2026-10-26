@@ -22,7 +22,7 @@ for f in $(grep -l 'isPartOf:' exogram/*.md | xargs grep -l '01M3MDS7RXMKZQYPV8H
 done
 ```
 
-If `$ARGUMENTS` names a task note, take that one. Else end the turn at once with that list numbered, one line each as title and `file:./exogram/<task>.md:1:1`, the first marked recommended, and ask which number to work; claim nothing before the answer.
+If `$ARGUMENTS` names a task note, take that one. Else end the turn at once with that list numbered, one line each as title and `file:${CLAUDE_PROJECT_DIR}/exogram/<task>.md:1:1`, the first marked recommended, and ask which number to work; claim nothing before the answer.
 2. Claim the task at once: on the pick, read the task note, set `hasActState: claimed` with the Edit tool, then think; the claim is the lock, other agents work this exogram.
 3. Read the canon, `grep -l 'noteRole: canon' exogram/*.md`, the style guide included, no other list of it.
 
@@ -33,7 +33,7 @@ The canon notes carry `vetting: unread` between validations; that is this workfl
 
 ## Per task: two gates
 
-Every message to the user opens with the task's title and link, `file:./exogram/<task>.md:1:1`, alone on the first line; `file:` paths are relative to Claude's working directory, so never `cd`, it stays `factors/` where the session starts.
+Every message to the user opens with the task's title and link, `file:${CLAUDE_PROJECT_DIR}/exogram/<task>.md:1:1`, alone on the first line; `file:` paths are absolute, Claude's working directory joined to the path, since the link opener does not resolve `./` against it.
 Other agents edit the formalism during the run: read it anew at the start of every turn, and take every quote, diff line, and line number from that read.
 
 ### Gate 1 — Currency
@@ -44,7 +44,7 @@ Read what the formalism changed since the task was written, committed or not:
 Those changes are the user's picks and outrank the task: a line they wrote stands, a term they cut never returns, and every fix uses the idioms they introduced.
 Check its issue against the current formalism:
 
-- Already resolved there, by a fix or by the removal of the text it faults → say so in one sentence with the resolving line as `file:./exogram/<formalism>.md:LINE:COL`, settle the task note as succeeded, STOP; the run is over.
+- Already resolved there, by a fix or by the removal of the text it faults → say so in one sentence with the resolving line as `file:${CLAUDE_PROJECT_DIR}/exogram/<formalism>.md:LINE:COL`, settle the task note as succeeded, STOP; the run is over.
 - Obsolete (unresolved, and the construct it would change no longer exists) → say why, ask the user whether to close it as failed.
 - Still current → Gate 2.
 
@@ -65,9 +65,9 @@ End the turn with one message, at most one page (about 40 lines), in exactly the
 ## Open
 ```
 
-- Problem: one or two sentences that quote the formalism text they talk about inline, as code spans, each sentence that names a defect followed by its `file:./exogram/<formalism>.md:LINE:COL` reference on the next line.
+- Problem: one or two sentences that quote the formalism text they talk about inline, as code spans, each sentence that names a defect followed by its `file:${CLAUDE_PROJECT_DIR}/exogram/<formalism>.md:LINE:COL` reference on the next line.
   NEVER cite a line number, rule clause number, or section in prose ("line 325", "need (6)", "at 222"): the user must follow every sentence without opening the note. `file:` references sit on their own line, under the sentence or diff they locate, never inside a sentence.
-- Option: one sentence why, then its ```diff blocks, one per site, verbatim lines, minus old plus new, its `file:./exogram/<formalism>.md:LINE:COL` reference beneath; every rule line it changes, every new name spelled out.
+- Option: one sentence why, then its ```diff blocks, one per site, verbatim lines, minus old plus new, its `file:${CLAUDE_PROJECT_DIR}/exogram/<formalism>.md:LINE:COL` reference beneath; every rule line it changes, every new name spelled out.
   Prose never describes an edit or an option; the user must never have to imagine what an option writes.
   The formalism appears only as the minus and context lines of a diff; never quote it on its own, a line that does not serve the pick is noise.
   One heading per distinct design; a committed design has one option section and no alternative.
