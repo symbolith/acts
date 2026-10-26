@@ -7,7 +7,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash(just:*), AskUserQuestion
 
 # Create Act
 
-Create one note typed `Type Act` or `Type Factor`, with or without a trait; several acts in one request share one research pass, one question round and one preview. The exogram workspace root is `/home/beavis/repositories/symbolith-exogram`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
+Create one note typed `Type Act` or `Type Factor`, with or without a trait; several acts in one request share one research pass, one question round and one preview. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; every path below is absolute or relative to it. Preview first, write only on approval. Type chain, field set, and enums come from the facts schema at run time, never from this file.
 
 ## Inputs
 
@@ -93,16 +93,17 @@ No `AskUserQuestion` here: text before a tool call is swallowed. The user approv
 Only after approval:
 
 ```bash
-just --justfile /home/beavis/repositories/symbolith-exogram/justfile ulid
+just --justfile ${CLAUDE_PLUGIN_ROOT}/../../../justfile ulid
 ```
 
 Write `<notes folder>/<ULID>.md`, the notes folder from step 2. Check no file exists first. Then:
 
 ```bash
-just --justfile /home/beavis/repositories/symbolith-exogram/justfile validate '<notes folder>/<ULID>.md'
+just --justfile ${CLAUDE_PLUGIN_ROOT}/../../../justfile validate '<notes folder>/<ULID>.md'
 ```
 
 Fix what it reports and rerun until clean.
+When the note is a Factor or a part of one, run `/diagrams:create-ascii-dag` on that Factor.
 
 ### 8. Report
 
