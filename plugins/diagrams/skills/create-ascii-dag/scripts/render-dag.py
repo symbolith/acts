@@ -7,7 +7,7 @@ from math import inf
 from pathlib import Path
 from statistics import mean
 
-ENACTABLE_TYPES = ("20260608023505", "20260923150308")
+ACT_AND_FACTOR_TYPES = ("20260608023505", "20260923150308")
 PLACE_TYPE = "20260608023514"
 SKIPPED = {"node_modules", "target"}
 WIDTH = 98
@@ -87,7 +87,7 @@ def parse_factor(path):
         for note in notes
         if refers(note, "isPartOf", factor) or refers(note, "dcIsPartOf", factor) or refers(factor, "hasPart", note)
     ]
-    acts = sorted((note for note in parts if any(refers(note, "type", kind) for kind in ENACTABLE_TYPES)), key=alias)
+    acts = sorted((note for note in parts if any(refers(note, "type", kind) for kind in ACT_AND_FACTOR_TYPES)), key=alias)
     places = sorted((note for note in parts if refers(note, "type", PLACE_TYPE)), key=alias)
     side = lambda act, plain, star, inverse: tuple(
         Arc(name(place), refers(act, star, place))
