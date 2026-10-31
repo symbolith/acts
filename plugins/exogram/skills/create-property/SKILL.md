@@ -9,7 +9,7 @@ allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templ
 
 Add a property to the exogram schema, or attach an existing one to a type.
 For an existing property start at step 3.
-The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`.
+Paths are relative to the exogram workspace root.
 
 ## Inputs
 
@@ -78,7 +78,7 @@ Ask only what the lookup left open: required or optional, and the types when the
 
 `just templates` adds the property to the root `properties` of `exogram.yaml` and its shape to `properties.yaml`; never edit either. Every property is valid on every note through that root declaration.
 
-Attach it on the type note: an entry under `requiredProperty` or `optionalProperty` with `property` linking the property note, and optionally `type` (the type the value must be an instance of), `value` (the note the value must contain) and `comment`. `just templates` writes `then.required` and `then.properties` of `types/<Title>.yaml` from those entries; never edit a type file. A type note is self-contained: attach the property on every type whose notes carry it, subtypes included, nothing is inherited. Every type it is attached to must be the property's `domain` or a subtype of it through `subClassOf`, or the property has no `domain`; `just validate` fails otherwise.
+Attach it on the type note: an entry under `requiredProperty` or `optionalProperty` with `property` linking the property note, and optionally `type` (the type the value must be an instance of), `value` (the note the value must contain) and `comment`. `just templates` writes `then.required` and `then.properties` of `types/<Title>.yaml` from those entries; never edit a type file. Nothing is inherited: a note carries only the properties of the types in its `type`, so attach the property on every type its notes list. Every type it is attached to must be the property's `domain` or a subtype of it through `subClassOf`, or the property has no `domain`; `just validate` fails otherwise.
 
 ### 6. Regenerate Templates
 

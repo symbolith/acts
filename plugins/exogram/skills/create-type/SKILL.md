@@ -1,13 +1,13 @@
 ---
 name: create-type
-description: Add a new note type to the facts exogram, with its type note, schema enum entry, type file, and template. Use when the user wants to "add a type", "create a note type", "new type note", "add a class", "add a supertype", or make existing types subtypes of a new one.
+description: Add a new note type to the facts exogram, with its type note, schema enum entry, type file, and template. Use when the user wants to "add a type", "create a note type", "new type note", "add a class", "add a supertype", or make existing types subtypes of a new one, or before proposing any type, inside a design discussion too.
 argument-hint: [type-name-or-description]
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templates:*), Bash(just validate:*), Bash(curl:*), WebSearch, WebFetch, AskUserQuestion
 ---
 
 # Create Note Type
 
-The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`. Add a note type to its `facts/exogram/` folder. All relative paths below are relative to its `facts/` folder, except those that start with `facts/` or `factors/`, which are relative to the exogram workspace root. A type is complete when its type note exists and `just templates` has written the rest from it: the enum entry and `allOf` reference in `exogram.yaml`, the type file, the template, and the type note's `template` link. A type note exists exactly once and only in `facts/exogram/`. A type note found in another exogram is moved here, or merged into its duplicate and deleted.
+Add a note type to the `facts/exogram/` folder of the exogram workspace root. All relative paths below are relative to its `facts/` folder, except those that start with `facts/` or `factors/`, which are relative to the exogram workspace root. A type is complete when its type note exists and `just templates` has written the rest from it: the enum entry and `allOf` reference in `exogram.yaml`, the type file, the template, and the type note's `template` link. A type note exists exactly once and only in `facts/exogram/`. A type note found in another exogram is moved here, or merged into its duplicate and deleted.
 
 ## Inputs
 
@@ -43,7 +43,7 @@ Read the ontology notes (`type: Type Ontology`) and the existing type notes. Dec
 - `subClassOf`: a list of links, usually one, to type notes, e.g. `"[Type Activity](20260426153348.md)"`, or a markdown link to the full URI when the superclass has no note, e.g. `"[prov:Entity](http://www.w3.org/ns/prov#Entity)"`. Never a bare prefixed term.
 - Subtypes: existing types that become subclasses of the new type. Their current `subClassOf` moves up to the new type when it still holds for all of them.
 - `disjointWith`: types no note may carry together with this one, e.g. Success, Plan and Failure pairwise. Set it on BOTH sides.
-- Own properties: every property a note of this type carries, each required or optional. A type note is self-contained: nothing is inherited, so a subtype repeats what its supertype attaches. Each property must have a property note, and that note's `domain` must name this type or a supertype of it, or be absent. Use `/exogram:create-property` for new ones and for a domain that needs widening.
+- Own properties: only what a note of this type carries today, each required or optional, never copied from a sibling type. Nothing is inherited: a note carries only the properties of the types in its `type`, and lists a supertype to carry that supertype's properties. Each property must have a property note, and that note's `domain` must name this type or a supertype of it, or be absent. Use `/exogram:create-property` for new ones and for a domain that needs widening.
 - `comment`: the single home of the definition; `exogram.yaml` and `types/<Title>.yaml` carry no `description` of the type. When `iri` is a class of an existing vocabulary, `comment` is that vocabulary's own definition of the class, verbatim, taken from the vocabulary's RDF file, in this order: `prov:definition` or `prov:editorsDefinition` (PROV-O), `skos:definition`, `rdfs:comment`, `schema:description`; when the file carries none, the Definition field of the vocabulary's specification (PRISM 2.0 spec PDF, PROV-DM for PROV-O terms without one), the Wikidata English description, or the ESCO description. Untouched: never paraphrased, trimmed, or written from memory. Only a `fctrs:` or `exogram:` class gets a definition written here: what it is in the ontology view, no example, never naming the term (the `iri` carries it).
 
 ### 3. Show the Design
