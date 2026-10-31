@@ -48,16 +48,16 @@ An element carries a conclusion, never enumeration or source tokens like class o
 ## Grounding
 
 - Base every claim and its evidence on the project's ground-of-truth notes (named in Premise Writing the formalism), not the source's loose framing. An external citation is never the evidence.
-- Provenance always includes the formalism note: whatever a note is grounded in or derived from, `[Factors Formalism](20260518150627.md)` must be among its `wasDerivedFrom` sources (see Note shapes).
+- Provenance always includes the formalism note: whatever a note is grounded in or derived from, `[Factors Machine Formalism](20260518150627.md)` must be among its `wasDerivedFrom` sources (see Note shapes).
 - Term diff: check the source's load-bearing terms against the ground-of-truth vocabulary. Re-ground a stale term to the canonical one, or drop it if the concept is absent. Never carry a term the ground-of-truth does not use.
 - Respect its hedges: a TODO, a simplification, or an out-of-scope remark bounds the claim. Reflect it in the `hasQualifier` list; do not assert past it.
 
 ## Note shapes
 
-Frontmatter comes from the type's template in `${CLAUDE_PLUGIN_ROOT}/../../../facts/.templates/`, read at run time.
+Frontmatter comes from the type's template in `facts/.templates/` of the exogram workspace root, read at run time; a Claim note uses `AmoClaim.md`.
 Element: short alias, one self-contained sentence in `comment` (no reference to its claim, so it stays reusable), empty body.
 Argument: alias `Argument <Claim alias>`, `hasClaim`, the slots, `wasDerivedFrom` as on its Claim, no `comment`, empty body; the Claim carries no slot.
-`wasDerivedFrom` always contains `[Factors Formalism](20260518150627.md)`; a source rewritten in place keeps its own provenance beside it.
+`wasDerivedFrom` always contains `[Factors Machine Formalism](20260518150627.md)`; a source rewritten in place keeps its own provenance beside it.
 It may hold more than the formalism note: list every note the content was actually built from, such as the note reduced or a cited `Source`, and never drop one to leave a single source standing.
 A note consulted only to check the result, not to build it, is grounding, not derivation: keep it out of `wasDerivedFrom`.
 Mirror a cited `Source` in `references` as well.
@@ -81,9 +81,8 @@ Mint a `Source` via `/factors:create-source`, never by hand, never as prose. If 
    - grounds: an element goes into the slot of the Argument of the claim it supports, existing or new.
    - adjacent: link it in `relation`.
 6. Confirm the claim wording with the user first, then the plumbing, as chat text that ends the turn; the user confirms free-form. Show the source beside the proposed set, each sentence marked kept/cut/re-grounded, the candidates with their relations, plus the claim's consequence and falsifier. Prefer folding over defending a weak claim; recommend dropping if too thin, ungrounded, or duplicative.
-7. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`; run every `just` recipe from there. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
-8. Report: ids written, reused vs created.
-9. Propose the next candidate. Name the single most likely note to reduce next, preferring an un-reduced `Idea` or other verbose note surfaced during dedup (step 5) whose `comment` bundles several claims, especially one an element just written links to or sits adjacent to. Give a one-line reason for the pick, or state that none surfaced; never reduce it without a fresh go-ahead.
+7. Run every `just` recipe from the exogram workspace root. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.
+8. Propose the next candidate. Name the single most likely note to reduce next, preferring an un-reduced `Idea` or other verbose note surfaced during dedup (step 5) whose `comment` bundles several claims, especially one an element just written links to or sits adjacent to. Give a one-line reason for the pick, or state that none surfaced; never reduce it without a fresh go-ahead.
 
 ## Anti-patterns
 

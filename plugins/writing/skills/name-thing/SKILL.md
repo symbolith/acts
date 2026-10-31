@@ -42,7 +42,7 @@ Record each no with the criterion's name.
 
 ## 5. Report
 
-One table: candidate, source, failed criteria, verdict.
+One table: candidate, source, failed criteria, result.
 Recommend the candidate with no failures; among several, the one from the earliest source, then the shortest.
 If none passes, say which criteria no candidate meets and what change to the thing would let a name pass. Do not pick the least bad.
 
@@ -51,6 +51,6 @@ Get approval. `--apply` skips it only when exactly one candidate passes.
 ## 6. Apply
 
 A rename is a full sweep, never partial. Every occurrence, every sibling document that must stay consistent, every gloss and remark that spells the word.
-Use `Edit` only. Never `Write`, `sed`, or `echo`. Never touch auto-generated blocks.
+Use `Edit`, or one script of exact-string replacements for a sweep of simple changes. Never `Write`, `sed`, or `echo`. Never touch auto-generated blocks.
 Where the target's rules require it, set its draft status and stop.
 Report each site as `file:<path>:LINE:COL`.

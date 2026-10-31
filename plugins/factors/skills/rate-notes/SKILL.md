@@ -1,6 +1,6 @@
 ---
 name: rate-notes
-description: Rate the concept merit of a set of exogram notes in parallel, writing a 1-5 qualityRating to each. Applies the rate-note rubric across many notes at once. Use when the user asks to "rate all notes", "rate these notes", "rate the notes in <folder>", "batch rate", "rate unrated notes", "quality-rate the exogram", or "rate every note".
+description: Rate the concept merit of a set of Argument notes in parallel, writing a 1-5 qualityRating to each. Applies the rate-note rubric across many notes at once. Use when the user asks to "rate all notes", "rate these notes", "rate the notes in <folder>", "batch rate", "rate unrated notes", "quality-rate the exogram", or "rate every note".
 argument-hint: [glob | folder | note list | "unrated" | "all"]
 allowed-tools: Read, Glob, Grep, Edit, Bash, Agent, AskUserQuestion
 ---
@@ -35,7 +35,7 @@ sample, then confirm before reading bodies. Stop if the user declines.
 
 ### 3. Filter to ratable notes
 
-Drop every non-`Claim` note (see Ratability in the rubric): only `Claim` notes
+Drop every non-`Argument` note (see Ratability in the rubric): only `Argument` notes
 are rated. List the skipped notes and their types so the skip is explicit, never
 silent.
 
@@ -48,7 +48,7 @@ about 8 concurrent for large sets). Give each subagent:
 - the rubric path (the sibling `rate-note` skill's `references/rubric.md`, as an
   absolute path),
 - the instruction to rate the concept only, write `qualityRating: N` and
-  `hasVerdict` (the one-line rationale) to that note's frontmatter, set
+  `hasReason` (the one-line rationale) to that note's frontmatter, set
   `vetting: unread` (preserving body and dataview blocks), and return a
   compact result: `{ path, alias, type, rating, oneLineRationale }`.
 
