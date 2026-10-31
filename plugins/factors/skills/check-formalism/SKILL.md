@@ -1,7 +1,7 @@
 ---
 name: check-formalism
 description: Check the Factors formalism note (20260518150627.md) for self-consistency, STYLE conformance, and soundness. Use when the user wants to "check the formalism", "validate the formal note", "lint the formalism", "verify Factors", "check 20260518150627", or after editing the Formalization of Factors note.
-argument-hint: [--mechanical|--correct|--style|--refs|--sound|--tlc|--all] (default runs mechanical + correctness + style + refs + cross-note)
+argument-hint: [--mechanical|--correct|--style|--sound|--tlc|--all] (default runs mechanical + correctness + style and refs + cross-note)
 allowed-tools: Read, Bash, Grep, Glob, Agent, AskUserQuestion
 ---
 
@@ -21,10 +21,20 @@ This skill reports; it does not edit. It must NOT modify the formalism note,
 nor any other canon note, on its own. When a check turns up
 something that would need a change in the formalism, report it as a finding
 and stop. Make an edit only after the user approves that specific change. After
-any approved edit, rerun Tier 1 and the Tier 3 STYLE subagent, which the repo
+any approved edit, rerun Tier 1 and the Tier 3 subagent, which the repo
 CLAUDE.md requires after touching the formalism, and re-check cross-note
 consistency. State explicitly, before editing, that you are about to change a
 ground-of-truth note and wait for confirmation.
+
+## Budget (overrides ultracode)
+
+The note is 850 lines and every subagent reads it whole, so agents are the
+cost. One subagent per tier, never more: at most 4 agents by default (Tier 2,
+Tier 3, the two cross-note passes), at most 5 with `--all`. Never wrap the
+tiers in a Workflow. Never spawn refuter, verifier, judge or critic agents;
+the main session verifies a finding by reading the cited line and nothing
+else. A subagent reads each file once. This section wins over ultracode and
+over any standing multi-agent instruction.
 
 ## Reading discipline (non-negotiable)
 
@@ -40,24 +50,20 @@ NOT an open result; tagged `[theorem]`/`[lemma]`/`[axiom]` statements hold.
 
 ## Scope
 
-Parse `$ARGUMENTS` for a scope flag. Default runs Tier 1 + 2 + 3 + 4 + cross-note.
+Parse `$ARGUMENTS` for a scope flag. Default runs Tier 1 + 2 + 3 + cross-note.
 `--all` adds soundness and TLC.
 
 | flag | runs |
 | --- | --- |
 | `--mechanical` | Tier 1 only |
 | `--correct` | Tier 2 |
-| `--style` | Tier 3 |
-| `--refs` | Tier 4 |
-| `--sound` | Tier 5 soundness subagent |
-| `--tlc` | Tier 5 TLA+ model checking |
+| `--style` | Tier 3 (style and cross-references) |
+| `--sound` | Tier 4 soundness subagent |
+| `--tlc` | Tier 4 TLA+ model checking |
 | `--all` | every tier |
-| (none) | Tier 1 + 2 + 3 + 4 + cross-note consistency |
+| (none) | Tier 1 + 2 + 3 + cross-note consistency |
 
 See `references/checks.md` for what each tier covers.
-
-Every subagent is spawned with `model: opus`, except the Tier 2
-formula-correctness subagent, which inherits the session model (Fable).
 
 ## Tier 1 — Mechanical pass (always)
 
@@ -117,28 +123,35 @@ formulas conflict. Mark each formula finding CONFIRMED when the defect is
 demonstrable from the note alone and PLAUSIBLE otherwise. Return `file:`
 findings or "clean".
 
-## Tier 3 — STYLE-grammar pass
+## Tier 3 — STYLE and cross-reference pass
 
-Spawn an `Explore` subagent. Have it read the style guide note Premise Writing the formalism names
+Spawn one `Explore` subagent. Have it read the style guide note Premise Writing the formalism names
 (the grammar lives there, do not restate it) and check every body block of the
-formalism against it, including NO USE BEFORE DEFINE on the formula column. Return
-`file:` findings or "clean".
-
-## Tier 4 — Cross-reference pass
-
-Spawn an `Explore` subagent to resolve every internal pointer: each
-parenthetical `(name)` that names an axiom, rule, lemma, or theorem resolves to
-its definition site, and each operator the note defines is applied within the
+formalism against it, including NO USE BEFORE DEFINE on the formula column.
+In the same read it resolves every internal pointer: each parenthetical
+`(name)` that names an axiom, rule, lemma, or theorem resolves to its
+definition site, and each operator the note defines is applied within the
 signature it declares. Treat tagged results as established. Return `file:`
 findings or "clean".
 
-## Tier 5 — Cross-note, soundness, and TLC
+## Tier 4 — Cross-note, soundness, and TLC
 
-Cross-note (default): read every canon note and check that the others agree
-with the formalism. The step summary must restate its rules; the state view
-only links to the State Machines section; the vocabulary is checked term by term: every `fctrs:` type note
+Cross-note (default), two subagents. The first reads the formalism and the two
+summaries: the step summary must restate its rules; the state view only links
+to the States section. The second reads the formalism and the
+vocabulary table below, not the 40 vocabulary notes. Build the table in
+`facts/exogram/` first:
+
+```
+for f in $(grep -l 'symbolith.org/factors#' *.md); do
+  echo "## $f"
+  awk 'NR>1 && /^---$/{exit} /^[a-zA-Z]+:/{keep=/^(iri|type|subClassOf|disjointWith|domain|range|characteristic):/} keep' "$f"
+done
+```
+
+The vocabulary is checked term by term: every `fctrs:` type
 against a set of the formalism (`subClassOf` and `disjointWith` against ⊎ and
-the axioms), every `fctrs:` property note against a signature (domain, range,
+the axioms), every `fctrs:` property against a signature (domain, range,
 `characteristic` against the function arrows and the uniqueness axioms). A
 term with no set or function behind it, or of another sort, is an error;
 `exogram:` ids and the exogram's own supers are conventions, skip them. A
@@ -150,7 +163,7 @@ note's own axioms, rules, and theorems (read from the note): are the axioms
 jointly satisfiable, is each rule well-typed and consistent with the invariants
 it claims to preserve, is each obligation plausibly dischargeable.
 
-TLC (`--tlc`): a TLC verdict speaks to the note's theorems only if the spec
+TLC (`--tlc`): a TLC result speaks to the note's theorems only if the spec
 under `formal/tla/` faithfully encodes the formalism. That is the `check-tla`
 skill's job; run `/factors:check-tla` first if alignment is unknown. `tlc` and `just`
 are on PATH. Run every recipe of `formal/tla/justfile` and, by reading its
@@ -161,11 +174,11 @@ critical.
 
 One consolidated report grouped by tier, each finding a clickable
 `file:./20260518150627.md:LINE:COL` reference with the rule it breaks and a
-suggested fix. Separate ERRORS from WARNINGS. End with a verdict: `clean` or
+suggested fix. Separate ERRORS from WARNINGS. End with a result: `clean` or
 `N errors, M warnings`. Propose fixes in the report; do not apply any to the
 formalism without explicit approval (see the read-only rule above).
 Before reporting, collect the open Act notes targeting the formalism
-(`for f in $(grep -lE 'state: (potential|intended|ready|claimed|recovering)' *.md); do
-sed -n '/^hasInput:/,/^[^ ]/p; /^hasOutput:/,/^[^ ]/p' "$f" | grep -q 20260518150627 && echo "$f"; done`)
+(`for f in $(grep -lE 'hasActState: act(Intended|Ready|Claimed|Recovering)' *.md); do
+sed -n '/^hasPremise:/,/^[^ ]/p; /^hasOutput:/,/^[^ ]/p' "$f" | grep -qE '20260518150627|01M3MDCW62YHXPX8TK4AB47QJY' && echo "$f"; done`)
 and drop every finding an existing task already covers; when a finding adds
 detail to such a task, refine that task note instead of reporting it.
