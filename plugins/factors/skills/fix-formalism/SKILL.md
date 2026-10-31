@@ -1,6 +1,6 @@
 ---
 name: fix-formalism
-description: Fold a lesson back into the Factors formalism (20260518150627.md) after the user explains something it got wrong or unclear: fix the imprecise text, or add a Remark if the point is correct but surprising. Use on "capture the lesson", "extract the lesson", "add a remark", or after correcting a misreading of the math.
+description: Fold a lesson back into the Factors formalism (20260518150627.md) after the user explains something it got wrong or unclear: fix the imprecise text, or add a Remark if the point is correct but surprising. Use on "capture the lesson", "extract the lesson", "add a remark", after correcting a misreading of the math, or on any claim about a formalism concept, such as "a factor is", "an act is", "the formalism should".
 argument-hint: [--dry-run] (default proposes then applies on approval)
 allowed-tools: Read, Edit, Bash, Grep, Glob, Agent, AskUserQuestion
 ---
@@ -8,9 +8,10 @@ allowed-tools: Read, Edit, Bash, Grep, Glob, Agent, AskUserQuestion
 # Capture a Factors formalism lesson
 
 The lesson is the gap between what you read in `file:./exogram/20260518150627.md:1:1`
-and what the user just corrected. Operate on THIS conversation; do not fork it.
-Repo CLAUDE.md and the style guide note it names (STYLE) already bind you; read
-STYLE live, do not restate it.
+and what the user just corrected. A claim the user repeats is settled: make the text say it, stop arguing.
+Operate on THIS conversation; do not fork it.
+First read Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`);
+its rule 1 binds: read the canon, grep nothing else. Read STYLE live, do not restate it.
 
 ## Decide
 
@@ -26,13 +27,13 @@ the fix; a Remark is the rare exception, only when the text is already exact.
   new one only if none fits. Never restate what the fixed text already implies.
 - It belongs in another canon note (listed in Index Canon; Premise Writing the
   formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`) names their roles)
-  or to the daemon (the Premise Writing the formalism daemon rule) -> do not
+  or to the oracle, the two questions authorized and admission -> do not
   touch the formalism; say where it goes and stop. A vocabulary lesson goes to
   the ontology type and property notes, never to the Ontology Factors body (it
   is derived from them); the state and step summaries only restate the
   formalism, so a summary divergence is fixed there, not here.
 
-Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuestion`.
+Both may apply, but add nothing the fix already settles.
 
 ## Do
 
@@ -47,5 +48,5 @@ Both may apply, but add nothing the fix already settles. Unsure -> `AskUserQuest
 5. Set `vetting: unread` in the note's frontmatter and STOP. Do not validate
    the change yourself; the user validates and sets `vetting: read`.
 
-Report: lesson, classification, site, edit, verdict (`captured` / `dry-run` /
+Report: lesson, classification, site, edit, result (`captured` / `dry-run` /
 `out of scope`).
