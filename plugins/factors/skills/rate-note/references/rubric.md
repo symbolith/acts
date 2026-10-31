@@ -21,7 +21,7 @@ soundness).
 
 ## Roll-up rule
 
-The stored `qualityRating` (integer 1-5) is one holistic verdict, not an average:
+The stored `qualityRating` (integer 1-5) is one holistic result, not an average:
 
 1. Soundness gates. An unsound or incoherent concept caps at 2, whatever its other virtues. A wrong idea is not a good one.
 2. The principal three set the band. Among sound concepts, significance and novelty decide 3 vs 4 vs 5.
@@ -45,11 +45,11 @@ others relative to them so scores stay consistent across a batch.
 
 ## Ratability
 
-The rubric applies only to `Claim` notes. A Claim asserts the single contestable
-proposition whose merit the rating measures; no other note carries an
-independently ratable concept. Every other type is not-applicable. The Toulmin
-support elements (`Evidence`, `Warrant`, `Rebuttal`) earn their place only
-relative to a Claim; a `Source` records an external work, not the exogram's own
+The rubric applies only to `Argument` notes. An Argument states the single
+contestable proposition, its Claim as limited by its qualifiers, whose merit the
+rating measures; no other note carries an independently ratable concept. Every
+other type is not-applicable. The Toulmin elements (`Claim`, `Evidence`,
+`Warrant`, `Rebuttal`) earn their place only relative to an Argument; a `Source` records an external work, not the exogram's own
 concept; and entity, administrative, or container notes hold no single rated
-assertion. For any non-Claim note, report not-applicable rather than forcing a
+assertion. For any non-Argument note, report not-applicable rather than forcing a
 rating.

@@ -1,13 +1,13 @@
 ---
 name: rate-note
-description: Rate a single exogram note's concept merit on a 1-5 qualityRating and write it to the note's frontmatter. Judges the idea itself (soundness, significance, novelty, scope, parsimony, fruitfulness), not how complete or polished the note is. Use when the user asks to "rate this note", "rate a note", "quality rating", "rate the concept", "score this note", or "set qualityRating".
+description: Rate a single Argument note's concept merit on a 1-5 qualityRating and write it to the note's frontmatter. Judges the idea itself (soundness, significance, novelty, scope, parsimony, fruitfulness), not how complete or polished the note is. Use when the user asks to "rate this note", "rate a note", "quality rating", "rate the concept", "score this note", or "set qualityRating".
 argument-hint: [note path or reference]
 allowed-tools: Read, Edit, Glob, Grep, AskUserQuestion
 ---
 
 # Rate Note
 
-Rate the merit of the concept a note captures and write it to the note's
+Rate the merit of the concept an Argument note captures and write it to the note's
 `qualityRating` frontmatter. The rubric is in
 [references/rubric.md](references/rubric.md). Read it before rating.
 
@@ -24,11 +24,11 @@ and prose are out of scope. A stub can be a 5; a polished note can be a 1.
 ### 1. Resolve the target
 
 Resolve `$ARGUMENTS` to one note path. Invoking this skill on a note is the
-permission to read it. Read only that note.
+permission to read it. Read only that note and the Claim it links through `hasClaim`.
 
 ### 2. Ratability gate
 
-Read the note's frontmatter `type`. If it is not a `Claim` note (see Ratability
+Read the note's frontmatter `type`. If it is not an `Argument` note (see Ratability
 in the rubric), report not-applicable and stop. Do not write a rating.
 
 ### 3. Evaluate the concept
@@ -45,7 +45,7 @@ parsimony, fruitfulness) tune within it. Produce one integer 1-5.
 
 ### 5. Write the rating
 
-Add or update `qualityRating: N` and `hasVerdict` (the one-sentence
+Add or update `qualityRating: N` and `hasReason` (the one-sentence
 justification) in the note's frontmatter, and set `vetting: unread`.
 Preserve all other frontmatter and body content. Never edit inside
 `dataview-serializer` blocks or any other auto-generated region.
@@ -74,6 +74,6 @@ qualityRating: N - [one-sentence justification]
 - Rewarding a well-written or fully-sourced note for a weak idea (that is execution).
 - Penalizing a strong idea because the note is a stub.
 - Averaging the criteria instead of applying the soundness gate and band rule.
-- Forcing a rating onto a non-`Claim` note; only Claims are rated.
+- Forcing a rating onto a non-`Argument` note; only Arguments are rated.
 - Editing note body or dataview blocks while writing the rating.
 - Reading notes other than the one being rated.

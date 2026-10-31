@@ -8,7 +8,7 @@ allowed-tools: Read, Bash, Grep, Glob, Agent
 # Align TLA+ spec to Factors formalism
 
 Establish that the TLA+ spec under `file:./formal/tla/:1:1` faithfully encodes
-the formalism note `file:./20260518150627.md:1:1`. A TLC verdict is evidence
+the formalism note `file:./20260518150627.md:1:1`. A TLC result is evidence
 about the note's theorems only when this alignment holds, so run this before
 the TLC tier of the `check-formalism` skill.
 
@@ -39,11 +39,11 @@ assume a fixed list.
 ### 1. Inventory both sides
 
 From the note: its sets and domains, its state predicates, the axioms in its
-Axioms section, the rules in its Step Relation, and its step
-invariants/theorems.
+Constraints and Factors sections, the rules in its Protocol section, and its
+step invariants/theorems.
 
 From the spec: the `VARIABLES`, the defined operators, the disjuncts of the
-`Next` action, the conjuncts of the well-formedness operator, the initial
+`Next` action, the conjuncts of the wellformedness operator, the initial
 state, and the `INVARIANTS`/`PROPERTIES` listed in each `MC_*.cfg`.
 
 ```
@@ -62,23 +62,23 @@ divergence.
 
 ### 3. Check the encodings closely
 
-- The well-formedness operator must encode exactly the axioms in the note's
-  Axioms section, one conjunct per axiom, no more and no less.
+- The wellformedness operator must encode exactly the axioms in the note's
+  Constraints section, one conjunct per axiom, no more and no less.
 - Each `Next` disjunct must encode the matching note step rule, premise for
   premise. Flag any premise present in one and absent in the other.
 - Each model-checkable theorem in the note should have a harness asserting it,
   and each harness property should name a note theorem.
 - Note where the spec deliberately bounds an unbounded note construct for
   finite-state checking, or abstracts an opaque payload. A faithful bound is
-  not drift; record it.
+  not drift; write it down.
 
 ### 4. Report
 
 One drift report: the matrix, then ERRORS (a note construct with no faithful
 encoding, or spec behaviour the note does not license) and WARNINGS (cosmetic
-renames, harness gaps, recorded bounds). End with a verdict: `aligned` or
+renames, harness gaps, written bounds). End with a result: `aligned` or
 `N drifts`. If aligned, state that TLC results may be trusted for the mapped
-theorems. If drifted, list which theorems' TLC verdicts are not yet
+theorems. If drifted, list which theorems' TLC results are not yet
 trustworthy.
 
 If invoked with `--fix-spec`, propose the minimal TLA+ edits to realign, state
