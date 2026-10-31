@@ -2,7 +2,7 @@
 aliases:
   - Working Note Affords Hierarchy
 type:
-  - "[Type DesignDocument](01M5HP91XPHJJ32VJFRR9BP9E1.md)"
+  - "[Type Design](01M5HP91XPHJJ32VJFRR9BP9E1.md)"
 comment: Working state of the affords hierarchy of the Factor Templates that replace the skills.
 subject:
   - "[Software Acts](01M3A6328V1FZSP45F54HD1TS6.md)"
@@ -79,23 +79,23 @@ dv.paragraph(tree(roots, 0, []).join("\n"));
 [Software Factors](01M3A631GTH86CTAD3D8PMQC7M.md)
 
 - Using Factors (Factor)
-    - Enacting an act (Factor)
-        - Taking up an act (Act)
+    - Doing an act (Factor)
+        - Choosing an act (Act)
         - Preparing an act (Factor)
             - Building a follows DAG (Act)
-            - (Factors) Enacting an act (Factor), recursive
+            - (Factors) Doing an act (Factor), recursive
         - Claiming an act (Act)
         - Previewing work (Act)
         - Producing outputs (Act)
             - (Acts) Creating an act (Factor)
-        - Settling an act (Act)
-    - Enacting a factor (Factor)
+        - Proposing for an act (Act)
+    - Doing the acts of a factor (Factor)
         - Building a member DAG (Act)
-        - (Factors) Enacting an act (Factor)
+        - (Factors) Doing an act (Factor)
         - Settling a factor (Act)
-    - Enacting a factor template (Factor)
+    - Doing a factor template (Factor)
         - Joining a template into a factor (Act)
-        - (Factors) Enacting a factor (Factor)
+        - (Factors) Doing the acts of a factor (Factor)
 
 ### Acts
 
@@ -146,8 +146,8 @@ dv.paragraph(tree(roots, 0, []).join("\n"));
 - Updating Workspace Symbolith (Act): [Updating Workspace Symbolith](01M3WTTSCGAYT49SCF8W8SKNGA.md)
 - Using Exogram (Factor): [Tending an exogram](01M3MCPACCK5HE44XPK8ZEJMHJ.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md)
 - Adding missing reverse properties (Act): [Adding missing reverse properties](01M412AVZKEKCM82187EZ7Z6HC.md)
-- Enacting an act (Factor): [Type Act](20260608023505.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `exogram:do-enactable`
-- Enacting a factor (Factor): [Type Factor](20260923150308.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `exogram:do-enactable`
+- Doing an act (Factor): [Type Act](20260608023505.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `exogram:do-act`
+- Doing the acts of a factor (Factor): [Type Factor](20260923150308.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `exogram:step-factor`
 - Creating an act (Factor): [Type Act](20260608023505.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `exogram:create-act`
 - Creating a factor template (Factor): [Type Factor Template](01M59Z1KXCTY0CAPX2E9WA0YAV.md), [Premise Tending an exogram](01M3MBPMFFWAA1FYBT30FKFYDR.md), `claude-code:create-skill`
 - Improving a factor template (Factor): [Type Factor Template](01M59Z1KXCTY0CAPX2E9WA0YAV.md), `claude-code:improve-skill`
