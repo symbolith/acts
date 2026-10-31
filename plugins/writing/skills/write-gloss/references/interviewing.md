@@ -20,7 +20,7 @@ Sourced rules for getting what an individual is out of its author's head when th
 - A goal checklist of four competency questions: what kind of thing (A2), what for (B1), for whom (B3), unlike what (C4) (Grüninger and Fox 1995); a goal is checked when its question is accepted
 - A questions section, one numbered item per question: its id, status and question; under it the draft claims, the author's words and the accepted answer; the draft enters when the question is asked, the answer only when accepted
 - Status is open (not yet asked), asked (awaiting an answer), accepted, settled (filled from a root answer) or superseded; nothing is overwritten, a superseded answer names its replacement (Nygard 2011)
-- A conflicts section, one numbered item per clash: its id X1, X2 and on, stasis, status and the point in dispute; under it one line per source with its link and claim, the repository verdict for a fact clash, and the draft
+- A conflicts section, one numbered item per clash: its id X1, X2 and on, stasis, status and the point in dispute; under it one line per source with its link and claim, the repository result for a fact clash, and the draft
 - A fixes section, one item per edit the answers call for in another note: its link, the property or section, and the proposed text
 
 ## Order
@@ -52,7 +52,7 @@ Held back for an answer that stays open: D2 one real case (Critical Decision Met
 - Clashes among the notes go to the conflicts section at ground time and are asked first
 - Check every new answer against the accepted ones; no new question while a conflict stands
 - Triage by stasis: fact, definition or quality (Quintilian III.6); fact clashes are asked first, then definition, then quality; a clash takes the question statuses
-- The interviewer settles a fact conflict against the repository; the verdict, convergence, divergence or absence, goes into the conflict item with the command run and its result, and becomes its draft, which the author still accepts or corrects
+- The interviewer settles a fact conflict against the repository; the result, convergence, divergence or absence, goes into the conflict item with the command run and its result, and becomes its draft, which the author still accepts or corrects
 - A definition conflict revises the less credible side, the draft or the accepted answer (reflective equilibrium, Daniels, SEP); credibility ranks code and notes over recollection, explicit over inferred, recent over old
 - Before forcing a fix, ask whether both hold at different times or the view changed (Rubin and Rubin 2012, ch. 8)
 
