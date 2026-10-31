@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/../../../exogram/scripts/guard_gws.py"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/scripts/workspace_hook.py guard_gws.py"
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/../../../exogram/scripts/guard_canon.py"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/scripts/workspace_hook.py guard_canon.py"
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/../../../exogram/scripts/validate_note.py"
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}\"/scripts/workspace_hook.py validate_note.py"
           }
         ]
       }

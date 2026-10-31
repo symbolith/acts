@@ -11,7 +11,7 @@ Validate YAML frontmatter of exogram notes against the exogram schemas and fix w
 
 ## Validator
 
-Never check notes by reading them. Run the validator from the exogram workspace root, `${CLAUDE_PLUGIN_ROOT}/../../..`:
+Never check notes by reading them. Run the validator from the exogram workspace root:
 
 ```sh
 just validate [glob]
