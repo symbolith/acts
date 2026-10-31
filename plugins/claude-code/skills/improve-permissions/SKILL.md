@@ -14,11 +14,11 @@ Consolidate every `settings.local.json` into shared settings, then delete it; no
 Run the collection script:
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/collect-permissions.sh
+bash ${CLAUDE_SKILL_DIR}/scripts/collect-permissions.sh <exogram workspace root>
 ```
 
 This outputs tab-separated lines: `permission\tsource_projects`
-Only permissions NOT already in global allow or deny or in `${CLAUDE_PLUGIN_ROOT}/../../../exogram/settings.json` are shown.
+Only permissions NOT already in global allow or deny or in the exogram workspace settings are shown.
 
 ### 2. Normalize
 
@@ -53,7 +53,7 @@ Group related permissions (e.g. all cargo commands together) into multi-select q
 
 ### 7. Update the targets
 
-- The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`. The exogram workspace settings are `${CLAUDE_PLUGIN_ROOT}/../../../exogram/settings.json`.
+- The exogram workspace settings are `exogram/settings.json` in the exogram workspace root.
 - The target follows the source, never the command. Global settings belong to dotfiles.
 - A permission from a `settings.local.json` inside the exogram workspace root goes to the exogram workspace settings; then run `just init`, which writes it into every `.claude/settings.json` there.
 - A permission from outside goes to the global settings, `settings.json` in `$CLAUDE_CONFIG_DIR` or, when it is unset, in `~/.claude`; one from both sides goes to both.

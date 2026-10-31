@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Grep, Glob, Skill
 
 # Sync Session
 
-Land the work of this session as self-contained commits. This skill builds the list of what the session wrote, by file and by hunk, and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself. The exogram workspace root is `${CLAUDE_PLUGIN_ROOT}/../../..`.
+Land the work of this session as self-contained commits. This skill builds the list of what the session wrote, by file and by hunk, and hands it to `exogram:sync-workspace`, which runs every git command behind its gates. This skill runs no state-changing git itself.
 
 ## Inputs
 

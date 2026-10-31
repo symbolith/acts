@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WORKSPACE=$(realpath "$(dirname "$0")/../../../../../..")
+WORKSPACE=$(realpath "${1:?usage: collect-permissions.sh <exogram workspace root>}")
 REPOSITORIES=$(dirname "$WORKSPACE")
 
 GLOBAL_SETTINGS="${CLAUDE_CONFIG_DIR:-$HOME/.claude}/settings.json"
