@@ -16,9 +16,9 @@ This conversation carries style rules made for terse chat answers, and they spoi
 1. You never write, rephrase or tidy the text or any proposal. Show what the agents return, verbatim.
 2. Every stage offers three proposals from three `writing:prose-writer` agents, spawned in one message, each with a different angle from the stage's axis.
 3. A prompt to an agent holds the stage, the angle, the brief, and the accepted material, all verbatim. It holds no style advice and no instruction on tone. The user's answers go in as the user wrote them.
-4. Show the three proposals side by side, labelled A, B and C, in the order returned, without ranking or comment. Then ask in plain text: A, B, C, or a combination the user describes. Never use `AskUserQuestion`.
+4. Show the three proposals as one question by the discipline, in the order returned, without comment; a combination the user describes also answers it. Never use `AskUserQuestion`.
 5. If two proposals differ only in wording, discard the set and spawn it again with the angles stated more sharply.
-6. When the user rejects all three, ask why and wait. Carry the reason into every later prompt as a constraint under the heading `Rejected`.
+6. When the user rejects all three, ask the question of the discipline and wait.
 7. When the user combines proposals, spawn one writer with the parts named and show the result for a yes or no.
 8. Each stage uses fresh writers. Do not resume one from an earlier stage.
 9. From one page up, save each draft and revision to the scratchpad and give the plain paths next to the text.
@@ -27,7 +27,7 @@ This conversation carries style rules made for terse chat answers, and they spoi
 
 ## 0. Size
 
-Ask first, in plain text, how long the text will be, offering the three sizes below. The answer picks the stages.
+Ask first how long the text will be, the three sizes below as the options. The answer picks the stages.
 
 | Size | Stages |
 |---|---|
@@ -37,13 +37,13 @@ Ask first, in plain text, how long the text will be, offering the three sizes be
 
 The user may add or drop a stage at any checkpoint.
 
-In the same message as the size question, spawn one `writing:prose-context` with the subject from `$ARGUMENTS` and the workspace root `${CLAUDE_PLUGIN_ROOT}/../../..`. It searches the Symbolith exogram for what the notes already say, then the web for what they lack and for the case against them. Its report joins the brief verbatim as `Context` and goes to every writer.
+In the same message as the size question, spawn one `writing:prose-context` with the subject from `$ARGUMENTS` and the exogram workspace root. It searches the Symbolith exogram for what the notes already say, then the web for what they lack and for the case against them. Its report joins the brief verbatim as `Context` and goes to every writer.
 
 ## 1. Brief
 
 Show the context report first, so the user answers with the notes in view. Where the report lists terms, the text uses those terms and no synonyms. Where it lists `Absent` or `Unconfirmed`, ask the user for it. Where it lists `Conflicts`, the user decides which side the text takes.
 
-Ask the questions in plain text, in this order, and wait for the answers. Do not answer them yourself and do not guess. A question the user cannot answer goes into the brief as open.
+Ask the questions in this order by the discipline, options drafted from the context report, and wait; one the report gives no options for, or the user cannot answer, goes into the brief as open.
 
 The short brief is questions 1, 2 and 4.
 
