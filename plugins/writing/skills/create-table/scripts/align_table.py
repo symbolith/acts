@@ -63,17 +63,18 @@ def align_table(lines):
     rows = [split_row(line) for line in lines if line.strip()]
     if len(rows) < 2 or not is_separator(rows[1]):
         sys.exit("expected a header row followed by a separator row")
+    separators = {index for index, row in enumerate(rows) if index > 0 and is_separator(row)}
     column_count = max(len(row) for row in rows)
     rows = [row + [""] * (column_count - len(row)) for row in rows]
     alignments = [alignment(cell) for cell in rows[1]]
-    body = [row for index, row in enumerate(rows) if index != 1]
+    body = [row for index, row in enumerate(rows) if index not in separators]
     widths = [
         max(3, max(display_width(row[column]) for row in body))
         for column in range(column_count)
     ]
     output = []
     for index, row in enumerate(rows):
-        if index == 1:
+        if index in separators:
             cells = [separator(widths[column], alignments[column]) for column in range(column_count)]
         else:
             cells = [pad(row[column], widths[column], alignments[column]) for column in range(column_count)]

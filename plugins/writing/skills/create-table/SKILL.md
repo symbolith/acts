@@ -17,6 +17,7 @@ A table must be readable in the raw file, not only when rendered. Every pipe sit
 - Escape a pipe inside a cell as `\|`. Links, code spans, and bold are fine.
 - Right-align number columns with a `--:` separator. Everything else is left-aligned, which is the default.
 - A cell left empty stays empty. Never fill it with a dash or "n/a" unless the request says so.
+- Split rows into categories with a divider, a separator row such as `| --- | --- |` between two groups.
 
 ## Step 2: Align It
 
@@ -30,7 +31,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/align_table.py <<'TABLE'
 TABLE
 ```
 
-The script pads every cell to its column width, rebuilds the separator row, and exits non-zero when a row exceeds 98 characters. On that failure shorten cells or drop a column, then rerun. Paste only the script's stdout into the file.
+The script pads every cell to its column width, rebuilds the separator row and every divider like it, and exits non-zero when a row exceeds 98 characters. On that failure shorten cells or drop a column, then rerun. Paste only the script's stdout into the file.
 
 Realign the whole table after any edit, including a one-cell change.
 
