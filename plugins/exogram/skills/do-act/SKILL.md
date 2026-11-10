@@ -11,7 +11,7 @@ allowed-tools: Read, Grep, Glob, Edit, Bash(just:*)
 
 ## Prepare
 
-1. Build the DAG of its `follows`, transitively, leaving out every `actSucceeded` act.
+1. Build the DAG of its `follows`, transitively, leaving out every `succeeded` act.
 2. Take a leaf of the DAG.
 3. Do the leaf with Prepare and Do of its own.
 4. Repeat from 1 until the leaf is the act asked for.
@@ -19,7 +19,7 @@ allowed-tools: Read, Grep, Glob, Edit, Bash(just:*)
 ## Do
 
 5. Read the act's `hasIntent`, `hasApplicability`, and every `hasInput` and `hasPremise` note in full.
-6. Ask to claim the act. Write the claim: `hasClaimant` is the user's Person note, which joins `contributor`, and `hasActState` is `actClaimed`.
+6. Ask to claim the act. Write the claim: `hasClaimant` is the user's Person note, which joins `contributor`, and `hasState` is `claimed`.
 7. Show the fix as the final chat message in this template, then STOP until the user agrees.
    Show the issue, the source lines, and the changed lines verbatim, never a description of them.
 
@@ -37,8 +37,8 @@ allowed-tools: Read, Grep, Glob, Edit, Bash(just:*)
    <question, then the recommended answer>
    ```
 
-8. Do the act: produce every note `hasOutput` names. When it needs acts that do not exist yet, create them with `/exogram:create-act`, link them in `follows`, write `hasActState: actIntended`, remove `hasClaimant`, and do them by this skill.
-9. Propose the outputs. Write `hasActState: actSucceeded` when every `hasOutput` exists, else `actFailed`, remove `hasClaimant`, then `just validate <file>`.
+8. Do the act: produce every note `hasOutput` names. When it needs acts that do not exist yet, create them with `/exogram:create-act`, link them in `follows`, write `hasState: intended`, remove `hasClaimant`, and do them by this skill.
+9. Propose the outputs. Write `hasState: succeeded` when every `hasOutput` exists, else `failed`, remove `hasClaimant`, then `just validate <file>`.
 
 ## Never
 

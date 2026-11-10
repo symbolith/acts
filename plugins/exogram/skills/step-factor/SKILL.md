@@ -12,7 +12,7 @@ allowed-tools: Read, Grep, Glob, Bash(just:*)
 ## Step
 
 1. Collect the members: every act or factor whose `isPartOf` names the factor.
-2. Find the ready members: an act not `actSucceeded` whose every `follows` act is `actSucceeded`; a member factor counts as succeeded when every act of it is.
+2. Find the ready members: an act not `succeeded` whose every `follows` act is `succeeded`; a member factor counts as succeeded when every act of it is.
 3. No ready member and no open member: stop, the factor is done.
 4. No ready member but open members: stop, name the act that blocks and what it follows.
 5. Take one ready act and do it with `/exogram:do-act`. A ready member factor is stepped by this skill.
@@ -20,10 +20,10 @@ allowed-tools: Read, Grep, Glob, Bash(just:*)
 
 ## Report
 
-- The factor's state, derived: succeeded when every member succeeded, failed when a member is `actFailed`, else the acts still open.
+- The factor's state, derived: succeeded when every member succeeded, failed when a member is `failed`, else the acts still open.
 - Set nothing on the factor note.
 
 ## Never
 
-- Write `hasFactorState`, `hasClaimant` or `contributor` on the factor.
+- Write `hasState`, `hasClaimant` or `contributor` on the factor.
 - Claim an act in this skill. Claiming, planning and doing belong to do-act.
