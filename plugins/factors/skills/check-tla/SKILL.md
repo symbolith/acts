@@ -5,7 +5,7 @@ argument-hint: [report|--fix-spec] (default: report drift only, never edits)
 allowed-tools: Read, Bash, Grep, Glob, Agent
 ---
 
-# Align TLA+ spec to Factors formalism
+# Align TLA+ spec to Factors Machine Formalism
 
 Establish that the TLA+ spec under `file:./formal/tla/:1:1` faithfully encodes
 the formalism note `file:./20260518150627.md:1:1`. A TLC result is evidence
