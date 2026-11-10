@@ -51,6 +51,6 @@ Get approval. `--apply` skips it only when exactly one candidate passes.
 ## 6. Apply
 
 A rename is a full sweep, never partial. Every occurrence, every sibling document that must stay consistent, every gloss and remark that spells the word.
-Use `Edit`, or one script of exact-string replacements for a sweep of simple changes. Never `Write`, `sed`, or `echo`. Never touch auto-generated blocks.
+After the design is approved, apply it in one go, one `Edit` per file spanning every site, so each diff is checked once and nothing is asked again. Never `Write`, a script, `sed`, or `echo`. Never touch auto-generated blocks.
 Where the target's rules require it, set its draft status and stop.
 Report each site as `file:<path>:LINE:COL`.
