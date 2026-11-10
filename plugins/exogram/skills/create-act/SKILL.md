@@ -39,16 +39,17 @@ Derive a value for every key of the template before asking anything; the fields 
 - the premises that govern this kind of work, and every rule the user states for it
 - the definition of every Factors term the act or its values use, read in Factors Machine Formalism and Factors Extension, which outrank any comment or premise
 - people and software the description names, grepped in the exogram and in `facts/exogram/`
-- for an enumerated range (`hasActState`: the notes typed `Type ActState`) its members, each by the local name of its `iri`; `hasFactorState` is derived and never filled
+- for an enumerated range (`hasState`: the notes typed `Type State`) its members, each by the local name of its `iri`; `hasState` is derived and never filled
 
 Read every source the act names, a URL or a note, before filling a key.
-Write each value as the answer to its property's definition asked of this act itself, the change it makes to its outputs, never of how the thing it adds behaves nor of what its output is later used for; a sentence that does not answer it is no value.
+Read the `comment` of each key's property note, and write the value as the answer to it asked of this act itself.
 Neither `hasIntent` nor the body carries a design choice: no formula, signature or candidate name; those are what doing the act decides.
 
 Confirm a note by alias and `comment` only. A literal stays a literal.
 An input, output or premise is always a note, never a bare URL or loose text: an external resource is a note of the fitting type (`Type Source` for a text), rules that several acts share are a `Type Premise` note. A missing one is drafted from its template and created with the act. `hasPremise` holds only the rules the act works under; a note the act works on is an input or output, even when typed Premise, and never repeats in `hasPremise`.
 Acts created together share their premises, and an act that continues another reads what the other read.
 `hasInput` holds only what the act cannot be done without, never what every act under a premise reads, which lives in that premise.
+`hasOutput` holds a new fact only this act writes, never a note other acts also write.
 A value of the wrong type is resolved along the graph, never flagged back: a parent that is an Act gives its own `isPartOf` and takes this act into its `follows`.
 
 Acts relate through what must be done before (`follows`) and what is in reach (`affords`), never through `isPartOf`. NEVER write `precedes`: it is the inverse of `follows`, derived by query.

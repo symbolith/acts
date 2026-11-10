@@ -1,6 +1,6 @@
 ---
 name: work-tasks
-description: Work through the intended Act notes that change the Factors formalism note, one at a time; analyze currency, then present the issue with worked-out solution previews in one question, implement the pick. Use when the user says "work the formalism tasks", "work through the tasks", "next formalism task", "process the task backlog", or names an act note to work on.
+description: Work through the intended Act notes that change the Factors Machine Formalism note, one at a time; analyze currency, then present the issue with worked-out solution previews in one question, implement the pick. Use when the user says "work the formalism tasks", "work through the tasks", "next formalism task", "process the task backlog", or names an act note to work on.
 argument-hint: [act-note-id] (optional; default asks which workable task)
 allowed-tools: Read, Grep, Glob, Edit, Bash, AskUserQuestion
 ---
@@ -15,23 +15,23 @@ SPEED TO THE GATES: reach each gate in the same turn, working alone and inline. 
 
 Run every command in `factors/`.
 
-1. The tracker is the Project note Writing the formalism (`factors/exogram/01M3MDS7RXMKZQYPV8HB9Y7R69.md`); a task is an Act note whose `isPartOf` reaches it, directly or through nested projects other than Backlog Writing the formalism (`factors/exogram/01M69E2471P0NGEJ30HV90VHY3.md`). Never read its serialized query result, it is stale between Obsidian runs; this one call lists the workable tasks, `hasActState: actIntended` with every `follows` settled, oldest first with titles.
+1. The tracker is the Project note Writing the formalism (`factors/exogram/01M3MDS7RXMKZQYPV8HB9Y7R69.md`); a task is an Act note whose `isPartOf` reaches it, directly or through nested projects other than Backlog Writing the formalism (`factors/exogram/01M69E2471P0NGEJ30HV90VHY3.md`). Never read its serialized query result, it is stale between Obsidian runs; this one call lists the workable tasks, `hasState: intended` with every `follows` settled, oldest first with titles.
 
 ```
 for f in $(awk 'FNR==1{s=0} /^isPartOf:/{s=1;next} /^[^ ]/{s=0} s&&match($0,/\([^)]*\.md\)/){print substr($0,RSTART+1,RLENGTH-2), substr(FILENAME,9)}' exogram/*.md \
   | awk 'BEGIN{member["01M3MDS7RXMKZQYPV8HB9Y7R69.md"]} {parent[NR]=$1; child[NR]=$2} END{do{grown=0; for(i=1;i<=NR;i++) if((parent[i] in member)&&!(child[i] in member)&&child[i]!="01M69E2471P0NGEJ30HV90VHY3.md"){member[child[i]]; grown=1; print "exogram/" child[i]}}while(grown)}' \
-  | xargs grep -l 'hasActState: actIntended' | sort); do
-  sed -n '/^follows:/,/^[^ ]/p' "$f" | grep -o '([^)]*\.md)' | tr -d '()' | sed 's|^|exogram/|' | xargs -r grep -L -E 'hasActState: (actSucceeded|actFailed)' | grep -q . \
+  | xargs grep -l 'hasState: intended' | sort); do
+  sed -n '/^follows:/,/^[^ ]/p' "$f" | grep -o '([^)]*\.md)' | tr -d '()' | sed 's|^|exogram/|' | xargs -r grep -L -E 'hasState: (succeeded|failed|suspended|canceled)' | grep -q . \
     || printf '%s %s\n' "$f" "$(awk '/^aliases:/{getline; sub(/^  - /,""); gsub(/"/,""); print; exit}' "$f")"
 done
 ```
 
 If `$ARGUMENTS` names a task note, take that one. Else end the turn at once with that list numbered, one line each as title and `file:~/repositories/symbolith-exogram/factors/exogram/<task>.md:1:1`, the first marked recommended, and ask which number to work; write no claim before the answer.
-2. Write the claim at once: on the pick, read the task note, write `hasActState: actClaimed` and `hasClaimant` (the user's Person note, which joins `contributor`) with the Edit tool, then think; the written claim is the lock, other agents work this exogram.
+2. Write the claim at once: on the pick, read the task note, write `hasState: claimed` and `hasClaimant` (the user's Person note, which joins `contributor`) with the Edit tool, then think; the written claim is the lock, other agents work this exogram.
 3. Read the canon, `grep -l 'noteRole: canon' exogram/*.md`, the style guide included, no other list of it.
 
 The task in hand is the only extra note this skill may read; of the others, grep frontmatter only, open none.
-The task note is never deleted; the user settles it and the skill writes that with the Edit tool: `hasActState: actSucceeded` when its issue is resolved in the formalism, `hasActState: actFailed` when it is skipped or closed, `hasClaimant` removed, and `noteRole: deprecated` either way.
+The task note is never deleted; the user settles it and the skill writes that with the Edit tool: `hasState: succeeded` when its issue is resolved in the formalism, `hasState: suspended` when it is skipped or closed, `hasClaimant` removed, and `noteRole: deprecated` either way.
 The canon notes carry `vetting: unread` between validations; that is this workflow's normal state. Never mention it, never ask about it.
 
 ## Per task: two gates
@@ -48,7 +48,7 @@ Those changes are the user's picks and outrank the task: a line they wrote stand
 Check its issue against the current formalism:
 
 - Already resolved there, by a fix or by the removal of the text it faults → say so in one sentence with the resolving line as `file:~/repositories/symbolith-exogram/factors/exogram/<formalism>.md:LINE:COL`, mark the task note as succeeded, STOP; the run is over.
-- Obsolete (unresolved, and the construct it would change no longer exists) → say why, ask the user whether to close it as failed.
+- Obsolete (unresolved, and the construct it would change no longer exists) → say why, ask the user whether to close it as suspended.
 - Still current → Gate 2.
 
 ### Gate 2 — Present issue with solutions, then implement
@@ -73,6 +73,7 @@ End the turn with one message, at most one page (about 40 lines), in exactly the
 - Option: one sentence why, then its ```diff blocks, one per site, verbatim lines, minus old plus new, its `file:~/repositories/symbolith-exogram/factors/exogram/<formalism>.md:LINE:COL` reference beneath; every rule line it changes, every new name spelled out.
   Prose never describes an edit or an option; the user must never have to imagine what an option writes.
   An option adds no prose by default: a new remark, gloss, Source sentence or rewording goes in only for a reason the formulas and existing lines cannot carry, and that reason stands beside its diff.
+  Check every sentence a diff writes against the style guide before you show it.
   The formalism appears only as the minus and context lines of a diff; never quote it on its own, a line that does not serve the pick is noise.
   One heading per distinct design; a committed design has one option section and no alternative.
 - Open: only what no option settles, one bullet each with the recommended answer.
@@ -88,14 +89,14 @@ Put one open decision in a message; the next waits for its answer.
 Once a reply settles the design, show the complete design in the message, every diff in every note, never behind a link, and wait for a go to it.
 Otherwise show the whole presentation only when the user asks for it.
 
-On skip, mark the task note as failed; the tracker's dataview block regenerates in Obsidian.
+On skip, mark the task note as suspended; the tracker's dataview block regenerates in Obsidian.
 
 On a go, implement. The hard work lives here: under ultracode, Workflow and subagents are allowed now, for the sweep and its checks, never for re-deciding the design.
 
-1. Apply the go as one script of exact-string replacements, one approval for every note, following the style guide, a complete consistency sweep (PERFECTION OVER CHURN), and every repo rule.
+1. Apply exactly the diffs shown with the Edit tool; a line the sweep finds beyond them goes back to the user as a diff, before any edit.
 2. Set the formalism note `vetting: unread` and STOP; do not validate it yourself.
 3. Mark the task note as succeeded.
-4. Align the two summary views and, on contradiction, the vocabulary, per the Premise Writing the formalism alignment rule.
+4. Align the two summary views and, on contradiction, the vocabulary, per the Premise Writing the formalism alignment rule; a term the go removed also leaves its notes and the schema.
 
 Then STOP; the run is over. Never take a second task, never ask whether to continue.
 
@@ -103,6 +104,6 @@ Then STOP; the run is over. Never take a second task, never ask whether to conti
 
 - Never edit the formalism before the user's go to the complete design.
 - Never launch Workflow, Agent, or any background task before the Gate 2 pick, ultracode or not. Gates come fast; heavy work comes after.
-- Never rewrite notes with Write or shell, except the replacement script the premise allows.
-- One task file per run. Read no other task note and work no other task, except to close as failed a task the decision made wrong or needless.
+- Never rewrite notes with Write or shell.
+- One task file per run. Read no other task note and work no other task, except to close as suspended a task the decision made wrong or needless.
 - Report nothing outside the task in hand: no on-sight findings, no draft notices, no backlog listing beyond the pick question.
