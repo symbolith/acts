@@ -1,14 +1,14 @@
 ---
 name: fix-formalism
-description: Fold a lesson back into the Factors formalism (20260518150627.md) after the user explains something it got wrong or unclear: fix the imprecise text, or add a Remark if the point is correct but surprising. Use on "capture the lesson", "extract the lesson", "add a remark", after correcting a misreading of the math, or on any claim about a formalism concept, such as "a factor is", "an act is", "the formalism should".
+description: Fold a lesson back into the Factors Machine Formalism (20260518150627.md) after the user explains something it got wrong or unclear: fix the imprecise text, or add a Remark if the point is correct but surprising. Use on "capture the lesson", "extract the lesson", "add a remark", after correcting a misreading of the math, on "finish the formalism", "improve the formalism", "fix the formalism", on any claim about a formalism concept, such as "a factor is", "an act is", "the formalism should", or before proposing any change to the formalism.
 argument-hint: [--dry-run] (default proposes then applies on approval)
 allowed-tools: Read, Edit, Bash, Grep, Glob, Agent, AskUserQuestion
 ---
 
-# Capture a Factors formalism lesson
+# Capture a Factors Machine Formalism lesson
 
 The lesson is the gap between what you read in `file:./exogram/20260518150627.md:1:1`
-and what the user just corrected. A claim the user repeats is settled: make the text say it, stop arguing.
+and what the user just corrected. A claim the user repeats is settled: stop arguing, but only an explicit go on the verbatim edit permits writing.
 Operate on THIS conversation; do not fork it.
 First read Premise Writing the formalism (`factors/exogram/01M3MDCW62YHXPX8TK4AB47QJY.md`);
 its rule 1 binds: read the canon, grep nothing else. Read STYLE live, do not restate it.
@@ -37,14 +37,13 @@ Both may apply, but add nothing the fix already settles.
 
 ## Do
 
-1. State the lesson in one line: what was misread, the correct reading. Not crisp -> ask.
+1. State the lesson in one line: what was misread, the correct reading, and the rule that lacks it. Not crisp, or a rule already covers it -> ask.
 2. Draft the exact edit, swept over every site it touches, conforming to STYLE's
    All constraints and to NO USE BEFORE DEFINE.
 3. Show the `file:./exogram/20260518150627.md:LINE:COL` site and the verbatim change;
-   note it edits a ground-of-truth note; get approval. `--dry-run` stops here.
+   every moved line included, never an outline; get approval. `--dry-run` stops here.
 4. Apply with Edit only (the Premise Writing the formalism Edit rule: never Write/`sed`/`echo`,
-   never the dataview-serializer blocks). If an Edit fails because the file
-   changed under you, silently re-read and retry.
+   never the dataview-serializer blocks). If the file changed since approval, re-read and show the edit again.
 5. Set `vetting: unread` in the note's frontmatter and STOP. Do not validate
    the change yourself; the user validates and sets `vetting: read`.
 

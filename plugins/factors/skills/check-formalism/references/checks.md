@@ -1,4 +1,4 @@
-# Factors formalism check catalog
+# Factors Machine Formalism check catalog
 
 What each tier covers, by method. The specific sets, axioms, rules, and
 theorems are read live from the note `20260518150627.md`; none are copied

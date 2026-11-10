@@ -1,11 +1,11 @@
 ---
 name: check-formalism
-description: Check the Factors formalism note (20260518150627.md) for self-consistency, STYLE conformance, and soundness. Use when the user wants to "check the formalism", "validate the formal note", "lint the formalism", "verify Factors", "check 20260518150627", or after editing the Formalization of Factors note.
+description: Check the Factors Machine Formalism note (20260518150627.md) for self-consistency, STYLE conformance, and soundness. Use when the user wants to "check the formalism", "validate the formal note", "lint the formalism", "verify Factors", "check 20260518150627", or after editing the Factors Machine Formalism note.
 argument-hint: [--mechanical|--correct|--style|--sound|--tlc|--all] (default runs mechanical + correctness + style and refs + cross-note)
 allowed-tools: Read, Bash, Grep, Glob, Agent, AskUserQuestion
 ---
 
-# Check Factors formalism
+# Check Factors Machine Formalism
 
 Layered checker for the formalism note `file:./20260518150627.md:1:1`.
 
@@ -178,7 +178,7 @@ suggested fix. Separate ERRORS from WARNINGS. End with a result: `clean` or
 `N errors, M warnings`. Propose fixes in the report; do not apply any to the
 formalism without explicit approval (see the read-only rule above).
 Before reporting, collect the open Act notes targeting the formalism
-(`for f in $(grep -lE 'hasActState: act(Intended|Ready|Claimed|Recovering)' *.md); do
+(`for f in $(grep -lE 'hasState: (intended|ready|claimed|recovering)' *.md); do
 sed -n '/^hasPremise:/,/^[^ ]/p; /^hasOutput:/,/^[^ ]/p' "$f" | grep -qE '20260518150627|01M3MDCW62YHXPX8TK4AB47QJY' && echo "$f"; done`)
 and drop every finding an existing task already covers; when a finding adds
 detail to such a task, refine that task note instead of reporting it.
