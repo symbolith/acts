@@ -11,6 +11,7 @@ Sync the exogram workspace: pull what the remotes have, then land what the host 
 
 This skill is the one place an agent runs state-changing git, and only past a gate the user approved.
 Every gate covers all repositories at once.
+Steps 5 and 7 each run as one visible `&&` chain in one Bash call, so the ask rules fire once per step; never split per repository, never inside `python3` or `just`.
 Every git command takes the form `git -C <folder>`, and every command runs outside the sandbox: commit signing and SSH fail inside it.
 A state-changing command is never piped or filtered; after each one assert the state it should have produced, and stop at the first mismatch.
 A command whose state already holds is skipped, without a remark.

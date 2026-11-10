@@ -77,8 +77,7 @@ Mint a `Source` via `/factors:create-source`, never by hand, never as prose. If 
    grep -rli '<key term>' --include='*.md' --exclude-dir='.claude' --exclude-dir='.templates' .
    ```
    - same: reuse its link, mint nothing.
-   - broader or narrower: `broader` on the specific note, `narrower` on the general one.
-   - grounds: an element goes into the slot of the Argument of the claim it supports, existing or new.
+   - grounds: an element, or a more specific Claim, goes into the slot of the Argument of the claim it supports, existing or new.
    - adjacent: link it in `relation`.
 6. Confirm the claim wording with the user first, then the plumbing, as chat text that ends the turn; the user confirms free-form. Show the source beside the proposed set, each sentence marked kept/cut/re-grounded, the candidates with their relations, plus the claim's consequence and falsifier. Prefer folding over defending a weak claim; recommend dropping if too thin, ungrounded, or duplicative.
 7. Run every `just` recipe from the exogram workspace root. Mint one id per note with `just ulid`. Write new notes with `wasDerivedFrom`, then rewrite the source in place as the Claim/element with the Edit tool, swapping its `type`, deleting frontmatter keys the schema does not know (paper slots such as `motivation`, `problem`, `contribution`, `field`, `gap`, `claim` become body prose or elements), ensuring `wasDerivedFrom` includes the formalism note per the Note shapes rule (kept alongside the source's own), keeping existing index metadata (`qualityRating`, `publish`), and setting `vetting: unread`. Validate each finished note with `just validate 'factors/exogram/<id>.md'`.

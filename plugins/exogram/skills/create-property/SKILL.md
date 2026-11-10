@@ -1,6 +1,6 @@
 ---
 name: create-property
-description: Add a new frontmatter property to the exogram schema, or attach an existing one to a type. Use when the user wants to "add a property", "add a field", "new frontmatter field", "add metadata", "attach a property to a type", "make a property required or optional on a type", asks "is this property allowed on this type", or extends the exogram schema with a property.
+description: Add a new frontmatter property to the exogram schema, or attach an existing one to a type. Use when the user wants to "add a property", "add a field", "new frontmatter field", "add metadata", "attach a property to a type", "make a property required or optional on a type", asks "is this property allowed on this type", extends the exogram schema with a property, or before proposing any property, new or reused, inside a design discussion too.
 argument-hint: [property-name-or-description]
 allowed-tools: Read, Edit, Write, Glob, Grep, Bash(just ulid:*), Bash(just templates:*), Bash(just validate:*), WebSearch, WebFetch, AskUserQuestion
 ---
@@ -59,7 +59,7 @@ Every property has a note in `facts/exogram/`, typed `Type Property`. File: `fac
 - `subPropertyOf`, `inverseOf`: one link to a property note, or a full-URI link for a term without a note. `inverseOf` goes on both sides.
 - A `fctrsx:` term's definition over the Formalism goes into the note Factors Extension (`factors/exogram/01M57A3S9JA5NP34DSHMEFJ9W4.md`), never into the property note. Never `wasDerivedFrom`, which is note provenance.
 - `domain`, `range`: lists of links to type notes, or full-URI links for terms without a note. Every listed type holds at once: each `domain` type applies to the subject, each `range` type to the object, as RDFS reads it. Never list alternatives; a property that applies to Person or Organization gets their nearest common supertype, Agent. When the exogram has none, take what the term's ontology declares, or omit the key; absent means any.
-- `isDefinedBy`: required, a list of the ontology notes the property belongs to, e.g. `"[Ontology Factors](20260919181803.md)"`. Each Ontology note's `comment` states the test for membership; read every one and apply them, never guess from `domain` or the term's vocabulary. An Ontology note lists its properties through it.
+- `isDefinedBy`: required, a list of the ontology notes the property belongs to, e.g. `"[Ontology Factors](20260919181803.md)"`. An `iri` in `fctrs:` gives Ontology Factors, one in `fctrsx:` gives Ontology Factors Extension. For any other `iri`, each Ontology note's `comment` states the test for membership; read every one and apply them, never guess from `domain` or the term's vocabulary. An Ontology note lists its properties through it.
 - `domain` and `range` link the exogram type note whenever one exists for the term, also when the type note only carries the term as `iri` or `sameAs` (Type Entity for prov:Entity, Type Agent for prov:Agent, foaf:Agent, dcterms:Agent). Never list a type next to its supertype.
 - `characteristic`: OWL characteristics, e.g. `functional`, `inverseFunctional`, when the property has them.
 
